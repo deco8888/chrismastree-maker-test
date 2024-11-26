@@ -1,5 +1,5 @@
 {
-	"name": "template-next14",
+	"name": "chrismastree-maker-test",
 	"version": "0.1.0",
 	"private": true,
 	"scripts": {
@@ -13,11 +13,15 @@
 	},
 	"dependencies": {
 		"@next/third-parties": "^14.1.4",
+		"@react-three/drei": "^9.117.3",
+		"@react-three/fiber": "^8.17.10",
 		"@tanstack/react-query": "^5.28.9",
 		"@tanstack/react-query-next-experimental": "^5.28.9",
 		"aria-hidden": "^1.2.4",
 		"body-scroll-lock": "^4.0.0-beta.0",
+		"firebase": "^11.0.2",
 		"focus-trap": "^7.5.4",
+		"lucide-react": "^0.461.0",
 		"next": "14.1.4",
 		"react": "^18",
 		"react-dom": "^18",

@@ -1,11 +1,11 @@
-import TopPage from '~/components/Top'
+import CreatePage from '~/components/Create'
 
 import styles from './page.module.scss'
 
-export default function Home() {
+export default function Create() {
 	return (
 		<main className={styles.main}>
-			<TopPage />
+			<CreatePage />
 		</main>
 	)
 }
