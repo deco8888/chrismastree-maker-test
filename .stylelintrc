@@ -1,0 +1,58 @@
+{
+    "plugins": [
+        "stylelint-order"
+    ],
+    "extends": [
+        "stylelint-config-standard",
+        "stylelint-config-recess-order"
+    ],
+    "customSyntax": "postcss-scss",
+    "rules": {
+        "declaration-block-no-shorthand-property-overrides": true,
+        "selector-class-pattern": null,
+        "declaration-block-no-redundant-longhand-properties": null,
+        "function-no-unknown": null,
+        "function-url-quotes": null,
+        "media-query-no-invalid": null,
+        "number-max-precision": 12,
+        "selector-pseudo-class-no-unknown": [
+            true,
+            {
+                "ignorePseudoClasses": [
+                    "global",
+                    "local"
+                ]
+            }
+        ],
+        "no-descending-specificity": null,
+        "block-no-empty": null,
+        "no-invalid-position-at-import-rule": null,
+        "at-rule-no-unknown": [
+            true,
+            {
+                "ignoreAtRules": [
+                    "function",
+                    "if",
+                    "else",
+                    "for",
+                    "each",
+                    "include",
+                    "mixin",
+                    "content",
+                    "use",
+                    "forward",
+                    "return",
+                    "at-root",
+                    "error"
+                ]
+            }
+        ],
+        "value-no-vendor-prefix": null,
+        "order/order": [
+            "dollar-variables",
+            "custom-properties",
+            "declarations",
+            "rules"
+        ]
+    }
+}

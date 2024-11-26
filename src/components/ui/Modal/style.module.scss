@@ -1,0 +1,43 @@
+@use '~/styles/common' as *;
+
+.container {
+	position: fixed;
+	top: 0;
+	left: 0;
+	z-index: 999;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	width: 100%;
+	height: 100%;
+	overflow: hidden auto;
+	background: rgba(#000, 0.8);
+
+	@include customScrollBar();
+
+	&::before,
+	&::after {
+		flex: 1;
+		content: '';
+	}
+}
+
+.cover {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100vw;
+	height: 100vh;
+
+	@include min-sm {
+		height: 100dvh;
+	}
+}
+
+.content {
+	position: relative;
+}
+
+.main {
+	position: relative;
+}

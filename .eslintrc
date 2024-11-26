@@ -1,0 +1,121 @@
+{
+	"extends": [
+		"next/core-web-vitals",
+		"eslint:recommended",
+		"plugin:react/recommended",
+		"plugin:@typescript-eslint/recommended",
+		"plugin:@typescript-eslint/eslint-recommended",
+		"prettier"
+	],
+	"plugins": [
+		"@typescript-eslint",
+		"react",
+		"unused-imports",
+		"import"
+	],
+	"parser": "@typescript-eslint/parser",
+	"env": {
+		"browser": true,
+		"node": true,
+		"es6": true
+	},
+	"parserOptions": {
+		"sourceType": "module",
+		"ecmaFeatures": {
+			"jsx": true
+		},
+		"project": "./tsconfig.json"
+	},
+	"rules": {
+		"react/prop-types": "off",
+		"react/react-in-jsx-scope": "off",
+		"@typescript-eslint/explicit-module-boundary-types": "off",
+		"@typescript-eslint/no-explicit-any": "off",
+		"@typescript-eslint/ban-ts-comment": "off",
+		"@next/next/no-img-element": "off",
+		"@next/next/no-html-link-for-pages": "off",
+		"@typescript-eslint/no-non-null-assertion": "off",
+		"react-hooks/exhaustive-deps": "off",
+		"sort-imports": 0,
+		"@typescript-eslint/no-unused-vars": "off",
+		"unused-imports/no-unused-imports": "warn",
+		"import/order": [
+			"error",
+			{
+				"groups": [
+					"builtin",
+					"external",
+					"internal",
+					[
+						"parent",
+						"sibling"
+					],
+					"object",
+					"type",
+					"index"
+				],
+				"newlines-between": "always",
+				"pathGroupsExcludedImportTypes": [
+					"builtin"
+				],
+				"alphabetize": {
+					"order": "asc",
+					"caseInsensitive": true
+				},
+				"pathGroups": [
+					// ここに書いた順序で間に1行空行をあけつつ整頓される
+					{
+						"pattern": "~/hooks/**",
+						"group": "internal",
+						"position": "before"
+					},
+					{
+						"pattern": "~/components/pages/**",
+						"group": "internal",
+						"position": "before"
+					},
+					{
+						"pattern": "~/components/ui/**",
+						"group": "internal",
+						"position": "before"
+					},
+					{
+						"pattern": "~/components/functional/**",
+						"group": "internal",
+						"position": "before"
+					},
+					{
+						"pattern": "~/libs/**",
+						"group": "internal",
+						"position": "before"
+					},
+					// styles
+					// 最後尾にしたいのでgroupをindex扱いにする
+					{
+						"pattern": "~/styles/**",
+						"group": "internal",
+						"position": "before"
+					},
+					{
+						"pattern": "./**.module.scss",
+						"group": "index",
+						"position": "before"
+					}
+				]
+			}
+		]
+	},
+	"overrides": [
+		{
+			"files": [
+				"*.ts"
+			],
+			"extends": [
+				"mdcs"
+			],
+			"rules": {
+				"no-unused-vars": "off"
+			}
+		}
+	]
+}

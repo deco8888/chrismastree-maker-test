@@ -1,0 +1,18 @@
+{
+  "*.{js,ts}": [
+    "bash -c 'npm run check-types'",
+    "eslint src --ext .js,.ts --fix"
+  ],
+  "*.{jsx,tsx}": [
+    "bash -c 'npm run check-types'",
+    "eslint src --ext .jsx,.tsx --fix",
+    "prettier --write"
+  ],
+  "!(tsconfig|package)*/*.{md,mdx,json}": [
+    "prettier --write"
+  ],
+  "*.scss": [
+    "stylelint --fix",
+    "prettier --write"
+  ]
+}

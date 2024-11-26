@@ -1,0 +1,7 @@
+{
+	"Scss Module Base": {
+		"prefix": "scss-module-base",
+		"body": ["@use '~/styles/common' as *;", "", ".container {", "\t display: block;", "}", ""],
+		"description": "scss module base"
+	}
+}

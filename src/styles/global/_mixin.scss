@@ -1,0 +1,240 @@
+@use './variables' as *;
+@use './function' as *;
+@use 'sass:math';
+
+/* ---------------------------
+	mixin
+--------------------------- */
+@mixin inner() {
+	width: get_percent($sp-inner-width, $sp-viewport);
+	max-width: $contents-width;
+	margin: 0 auto;
+	@content;
+}
+
+/* ---------------------------
+	メディアクエリー
+--------------------------- */
+// 576px 以下
+@mixin min-sm($max-width: $sm-width + 1px) {
+	@media not screen and (min-width: $max-width) {
+		@content;
+	}
+}
+
+// 768px 以下
+@mixin min-md($max-width: $md-width + 1px) {
+	@media not screen and (min-width: $max-width) {
+		@content;
+	}
+}
+
+// 950px 以下
+@mixin min-xl {
+	@media not screen and (min-width: $lg-width) {
+		@content;
+	}
+}
+
+// 768px 以上
+@mixin max-md($min-width: $md-width + 1px) {
+	@media only screen and (min-width: $min-width) {
+		@content;
+	}
+}
+
+// 950px 以上
+@mixin max-xl($min-width: $lg-width) {
+	@media only screen and (min-width: $min-width) {
+		@content;
+	}
+}
+
+// デザインのカンバスサイズ 以上
+@mixin max-large($min-width: $large-width) {
+	@media only screen and (min-width: $min-width) {
+		@content;
+	}
+}
+
+/* フルサイズ */
+@mixin full() {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	@content;
+}
+
+/* 縦書き */
+@mixin rl() {
+	writing-mode: vertical-rl;
+	@content;
+}
+
+/* ホバー用 */
+@mixin hover() {
+	@media (hover: hover) and (pointer: fine) {
+		cursor: pointer;
+
+		&:hover {
+			@content;
+		}
+	}
+
+	@if $ie {
+		@at-root .ua-ie &:hover {
+			@content;
+		}
+	}
+}
+
+@mixin hoverOp($opacity: 0.6) {
+	@media (hover: hover) and (pointer: fine) {
+		transition: opacity 0.3s;
+
+		&:hover {
+			opacity: $opacity;
+		}
+	}
+
+	@if $ie {
+		@at-root .ua-ie &:hover {
+			transition: opacity 0.3s;
+
+			&:hover {
+				opacity: $opacity;
+			}
+		}
+	}
+}
+
+// 文章の行数指定
+@mixin line-clamp($count: 3) {
+	// 引数が数値以外だったらエラーを返す
+	@if type-of($count) != 'number' {
+		@error 'line-clampの引数は必ず数値で指定してください';
+	}
+
+	@if $count ==1 {
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	} @else {
+		display: -webkit-box;
+		-webkit-line-clamp: $count;
+		-webkit-box-orient: vertical;
+		overflow: hidden;
+	}
+}
+
+/* ---------------------------
+	モーダル関連
+--------------------------- */
+@mixin ModalContainer {
+	@include full {
+		position: fixed;
+	}
+
+	z-index: 999;
+	display: flex;
+	overflow: hidden auto;
+	background: rgba(#000, 0.8);
+
+	@include customScrollBar();
+	@content;
+}
+
+@mixin ModalCover {
+	@include full {
+		position: fixed;
+	}
+
+	@content;
+}
+
+@mixin customScrollBar($track: #ccc, $thumb: #ababab, $width: 5px) {
+	&::-webkit-scrollbar {
+		position: relative;
+		display: block;
+		width: #{$width};
+	}
+
+	&::-webkit-scrollbar-track {
+		background: #{$track};
+		border-radius: 2.5px;
+	}
+
+	&::-webkit-scrollbar-thumb {
+		cursor: pointer;
+		background: #{$thumb};
+		border-radius: 2.5px;
+	}
+}
+
+@mixin hiddenScrollBar {
+	&::-webkit-scrollbar {
+		display: none;
+	}
+}
+
+/* ---------------------------
+	スタイルのリセット
+--------------------------- */
+
+/* ボタンタグのリセット */
+@mixin btnReset {
+	appearance: none;
+	cursor: pointer;
+	user-select: none;
+	background: none;
+	border: none;
+	outline: none;
+	@content;
+}
+
+/* input系のスタイルをリセット */
+@mixin inputReset {
+	appearance: none;
+	user-select: all;
+	border: none;
+	outline: none;
+	@content;
+}
+
+/* アスヒ */
+@mixin aspectRatio($width, $height) {
+	aspect-ratio: $width / $height;
+
+	@supports not (aspect-ratio: $width / $height) {
+		&::before {
+			float: left;
+			padding-top: math.div($height, $width) * 100%;
+			content: '';
+		}
+
+		&::after {
+			display: block;
+			clear: both;
+			content: '';
+		}
+	}
+}
+
+@mixin onTapAnimation {
+	&:active {
+		animation: 0.13s push forwards;
+
+		@keyframes push {
+			0%,
+			100% {
+				transform: scale(1);
+			}
+
+			50% {
+				transform: scale(0.87);
+			}
+		}
+	}
+}

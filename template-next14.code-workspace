@@ -1,0 +1,49 @@
+{
+	"folders": [
+		{
+			"path": "./",
+		},
+	],
+	"settings": {
+		"files.exclude": {
+			"**/*.Identifier": true,
+			// "**/.tmp": true,
+			"**/out": true,
+			// "**/.next": true,
+			// "**/.vscode": true,
+			// "**/blend-files": true,
+			// "**/build": true,
+			// // "**/package.json": true,
+			// "**/tsconfig.json": true
+			// "**/next-env.d.ts": true,
+			// "**/.prettierignore": true,
+			// "**/.prettierrc": true,
+			// "**/.eslintrc": true,
+			// "**/.eslintrc.json": true
+		},
+		"editor.formatOnSave": true,
+		"editor.insertSpaces": false,
+		"editor.tabSize": 4,
+		"editor.detectIndentation": true,
+		"editor.defaultFormatter": "esbenp.prettier-vscode",
+		"prettier.prettierPath": "./node_modules/prettier/index.cjs",
+		"eslint.nodePath": "./node_modules/eslint",
+		"stylelint.stylelintPath": "./node_modules/stylelint",
+		"editor.codeActionsOnSave": {
+			"source.fixAll": "explicit",
+			"source.addMissingImports": "explicit",
+			"source.fixAll.stylelint": "explicit",
+		},
+		"[typescript]": {
+			"editor.formatOnSave": false,
+		},
+		"[scss]": {
+			"editor.formatOnSave": true,
+		},
+		"emmet.includeLanguages": {
+			"javascript": "javascriptreact",
+		},
+		"cssModules.camelCase": true,
+		"typescript.tsdk": "node_modules/typescript/lib",
+	},
+}

@@ -1,0 +1,63 @@
+@use 'sass:math';
+@use './variables' as *;
+
+@function get_percent($size, $base) {
+	@return math.div($size, $base) * 100%;
+}
+
+@function get_vw($size, $base) {
+	@return math.div($size, $base) * 100vw;
+}
+
+@function get_vh($size, $base) {
+	@return math.div($size, $base) * 100vh;
+}
+
+@function get_em($size, $base) {
+	@return math.div($size, $base) + em;
+}
+
+@function get_px_to_vw($size, $base) {
+	$vw: get_vw($size, $base);
+
+	@return min(#{$size}, #{$vw});
+}
+
+@function get_px_to_vw_max($size, $base) {
+	$vw: get_vw($size, $base);
+
+	@return max(#{$size}, #{$vw});
+}
+
+@function get_clamp($min, $max, $minWidth: $md-width, $maxWidth: $large-width) {
+	$maxViewport: $large-width;
+
+	@if ($maxWidth) {
+		$maxViewport: $maxWidth;
+	}
+
+	$minViewport: $md-width;
+
+	@if ($minWidth) {
+		$minViewport: $minWidth;
+	}
+
+	$variablePart: math.div($max - $min, $maxViewport - $minViewport);
+	$constant: to_fixed($max - $maxViewport * $variablePart, 3);
+
+	@return unquote('clamp(#{$min}, #{$constant} + #{to_fixed(100 * $variablePart, 3)}vw, #{$max})');
+}
+
+@function to_fixed($number, $digits: 0) {
+	$n: 1;
+
+	@for $i from 1 through $digits {
+		$n: $n * 10;
+	}
+
+	@return math.div(math.round($number * $n), $n);
+}
+
+@function rand($min, $max) {
+	@return math.random() * ($max - $min) + $min;
+}

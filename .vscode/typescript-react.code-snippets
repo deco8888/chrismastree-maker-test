@@ -1,0 +1,22 @@
+{
+	"React Client Component Base": {
+		"prefix": "react-client-component",
+		"body": [
+			"\"use client\"",
+			"",
+			"import React from \"react\";",
+			"import style from \"./style.module.scss\";",
+			"",
+			"type Props = {};",
+			"",
+			"export const ${TM_FILENAME_BASE}: React.FC<Props> = ({}) => {",
+			"\treturn (",
+			"\t\t<div className={style.container}>",
+			"\t\t</div>",
+			"\t)",
+			"};",
+			"",
+		],
+		"description": "React Client Component",
+	},
+}
