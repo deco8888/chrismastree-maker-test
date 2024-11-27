@@ -1,0 +1,39 @@
+@use '~/styles/common' as *;
+
+.container {
+	position: relative;
+	width: 100%;
+	height: 100%;
+}
+
+.editor {
+	position: relative;
+	display: grid;
+	grid-template-columns: 50% 50%;
+	width: 100%;
+	max-width: 1400px;
+	aspect-ratio: 16 / 9;
+	margin: auto;
+}
+
+.canvas {
+	position: relative;
+}
+
+.colors {
+	display: flex;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 5px;
+
+	&_item {
+		width: 50px;
+
+		&_btn {
+			width: 100%;
+			padding: 5px;
+			font-weight: bold;
+			color: #403535;
+			border-radius: 5px;
+		}
+	}
+}

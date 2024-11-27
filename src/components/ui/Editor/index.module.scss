@@ -1,0 +1,36 @@
+@use '~/styles/common' as *;
+
+.container {
+	position: relative;
+	display: grid;
+	grid-template-columns: 50% 50%;
+	width: 100%;
+	max-width: 1400px;
+	aspect-ratio: 16 / 9;
+	margin: auto;
+}
+
+.model {
+	position: relative;
+}
+
+.panel {
+	&_colors {
+		display: flex;
+		grid-template-columns: repeat(3, 1fr);
+		gap: 5px;
+
+		&_item {
+			width: 100px;
+		}
+
+		&_btn {
+			width: 100%;
+			padding: 10px 5px;
+			font-weight: bold;
+			color: #403535;
+			cursor: pointer;
+			border-radius: 5px;
+		}
+	}
+}

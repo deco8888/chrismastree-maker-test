@@ -1,11 +1,13 @@
 'use client'
 
+import { Editor } from '../ui/Editor'
+
 import style from './index.module.scss'
 
 export default function CreatePage() {
 	return (
 		<div className={style.container}>
-			<h2 className={style.title}>作成</h2>
+			<Editor />
 		</div>
 	)
 }

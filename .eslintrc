@@ -103,7 +103,8 @@
 					}
 				]
 			}
-		]
+		],
+		"react/no-unknown-property" : "off"
 	},
 	"overrides": [
 		{

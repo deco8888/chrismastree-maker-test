@@ -5,3 +5,17 @@
 	width: 100%;
 	padding-bottom: 15px;
 }
+
+.start {
+	margin-top: 50px;
+
+	a {
+		display: flex;
+		justify-content: center;
+		padding: 10px;
+		font-weight: bold;
+		color: #403535;
+		background-color: #fff;
+		border-radius: 5px;
+	}
+}

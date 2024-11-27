@@ -6,6 +6,7 @@ import QueryProvider from '~/components/functional/QueryProvider'
 import type { Metadata } from 'next'
 
 import '~/styles/global.scss'
+import style from './layout.module.scss'
 
 export const metadata: Metadata = {
 	title: '',
@@ -22,7 +23,9 @@ export default function RootLayout({
 			<body>
 				<QueryProvider>
 					<Suspense>
-						<AppGlobalProvider>{children}</AppGlobalProvider>
+						<AppGlobalProvider>
+							<div className={style.wrapper}>{children}</div>
+						</AppGlobalProvider>
 					</Suspense>
 				</QueryProvider>
 			</body>
