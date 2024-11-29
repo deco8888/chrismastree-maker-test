@@ -1,3 +1,5 @@
+import { DecorationsByType } from '~/types/editor'
+
 export const TREE_COLORS = [
 	{
 		slug: 'green',
@@ -16,7 +18,7 @@ export const TREE_COLORS = [
 	},
 ]
 
-export const DECORATION_TYPES = [
+export const DECORATIONS_BY_TYPE: DecorationsByType[] = [
 	{
 		slug: 'ball',
 		path: 'ball.glb',

@@ -2,16 +2,25 @@
 
 .container {
 	position: relative;
-	display: grid;
-	grid-template-columns: 50% 50%;
+	display: flex;
+	flex-flow: column;
 	width: 100%;
-	max-width: 1400px;
-	aspect-ratio: 16 / 9;
-	margin: auto;
 }
 
 .model {
 	position: relative;
+	width: 100%;
+	max-width: 500px;
+	margin-inline: auto;
+
+	&::after {
+		position: relative;
+		z-index: -1;
+		display: block;
+		width: 100%;
+		padding-top: get_percent(1080px, 850px);
+		content: '';
+	}
 }
 
 .panel {

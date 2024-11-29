@@ -1,6 +1,7 @@
 import { Suspense } from 'react'
 
 import AppGlobalProvider from '~/components/functional/AppGlobalProvider'
+import AuthProvider from '~/components/functional/AuthProvider'
 import QueryProvider from '~/components/functional/QueryProvider'
 
 import type { Metadata } from 'next'
@@ -24,7 +25,14 @@ export default function RootLayout({
 				<QueryProvider>
 					<Suspense>
 						<AppGlobalProvider>
-							<div className={style.wrapper}>{children}</div>
+							<AuthProvider>
+								<div className={style.container}>
+									<div className={style.bg}></div>
+									<div className={style.inner}>
+										<div className={style.contents}>{children}</div>
+									</div>
+								</div>
+							</AuthProvider>
 						</AppGlobalProvider>
 					</Suspense>
 				</QueryProvider>

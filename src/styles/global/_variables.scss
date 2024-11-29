@@ -27,8 +27,12 @@ $large-width: 1400px; // デザインカンバスサイズ
 $contents-width: 1240px;
 
 // SP カンバスサイズ
-$sp-viewport: 393px;
-$sp-inner-width: 373px;
+$sp-viewport: 850px;
+$sp-inner-width: 850px * 0.9;
+$pc-ratio: calc(500 / 600);
+$sp-ratio: calc(768 / 500);
+$ratio_max: calc(600 / 850);
+$ratio_min: calc(500 / 850);
 
 /* ---------------------------
 	共通コンポーネント

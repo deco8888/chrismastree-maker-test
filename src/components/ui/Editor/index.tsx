@@ -2,7 +2,8 @@
 
 import { EditorContext, useEditor } from '~/hooks/useEditor'
 
-import { DECORATION_TYPES, TREE_COLORS } from './data'
+import { DECORATIONS_BY_TYPE, TREE_COLORS } from './data'
+import { DecorationController } from './DecorationPreview/Controller'
 import { ChristmasTree } from './Model'
 
 import style from './index.module.scss'
@@ -35,19 +36,22 @@ export const Editor = () => {
 						))}
 					</ul>
 
-					<ul className={style.decoration}>
-						{DECORATION_TYPES.map((decoration, i) => (
-							<li className={style.decoration_item} key={i}>
-								<button
-									onClick={() => context?.setSelectedDecoration(decoration)}
-									className={style.colors_item_btn}
-									aria-label={decoration.label}
-								>
-									{decoration.slug}
-								</button>
-							</li>
-						))}
-					</ul>
+					<div>
+						<ul className={style.decoration}>
+							{DECORATIONS_BY_TYPE.map((decoration, i) => (
+								<li className={style.decoration_item} key={i}>
+									<button
+										onClick={() => context?.setSelectedDecoration(decoration)}
+										className={style.colors_item_btn}
+										aria-label={decoration.label}
+									>
+										{decoration.slug}
+									</button>
+								</li>
+							))}
+						</ul>
+						<DecorationController />
+					</div>
 				</div>
 			</div>
 		</EditorContext.Provider>

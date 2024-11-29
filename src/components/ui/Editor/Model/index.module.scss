@@ -6,16 +6,6 @@
 	height: 100%;
 }
 
-.editor {
-	position: relative;
-	display: grid;
-	grid-template-columns: 50% 50%;
-	width: 100%;
-	max-width: 1400px;
-	aspect-ratio: 16 / 9;
-	margin: auto;
-}
-
 .canvas {
 	position: relative;
 }

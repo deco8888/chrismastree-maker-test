@@ -61,3 +61,7 @@
 @function rand($min, $max) {
 	@return math.random() * ($max - $min) + $min;
 }
+
+@function get_size_pc($base) {
+	@return get_clamp($base * $ratio_min, $base * $ratio_max);
+}
