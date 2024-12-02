@@ -1,10 +1,15 @@
 'use client'
 
 import { Environment, OrbitControls, PerspectiveCamera, useGLTF } from '@react-three/drei'
-import { Canvas } from '@react-three/fiber'
-import { Bloom, EffectComposer } from '@react-three/postprocessing'
-import { CSSProperties, Suspense, useCallback, useContext, useEffect } from 'react'
+import { Canvas, extend, useThree } from '@react-three/fiber'
+import { CSSProperties, Suspense, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
+// import { Bloom, EffectComposer } from '@react-three/postprocessing'
 import * as THREE from 'three'
+import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js'
+import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js'
+import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js'
+
+extend({ EffectComposer, RenderPass, UnrealBloomPass })
 
 import { EditorContext } from '~/hooks/useEditor'
 
@@ -14,6 +19,28 @@ import { TreeLeaf } from './Leaf'
 import { DecorationPreview } from '../DecorationPreview'
 
 const MODEL_PATH = '/assets/models/christmasTree.glb'
+
+const Bloom = () => {
+	const { gl, camera, size } = useThree()
+	const [scene, setScene] = useState()
+	const composer = useRef<any>()
+
+	useEffect(() => {
+		if (scene) {
+			composer.current.setSize(size.width, size.height)
+		}
+	}, [size])
+
+	return (
+		<></>
+		// <scene>
+		// 	<effectComposer ref={composer} args={[gl]}>
+		// 		<renderPass attachArray="passes" scene={scene} camera={camera} />
+		// 		<shaderPass attachArray="passes" />
+		// 	</effectComposer>
+		// </scene>
+	)
+}
 
 const meshOptions = {
 	castShadow: true,
@@ -130,13 +157,13 @@ const ChristmasTreeModelScene = ({ children }: ChristmasTreeModelSceneProps) => 
 				target={new THREE.Vector3(0, 0, 0)}
 			/>
 
-			<EffectComposer>
+			{/* <EffectComposer>
 				<Bloom
 					intensity={0.5} // ブルームの強さ
 					luminanceThreshold={0} // 輝度しきい値
 					luminanceSmoothing={1.0} // 輝度しきい値の滑らかさ
 				/>
-			</EffectComposer>
+			</EffectComposer> */}
 		</Canvas>
 	)
 }
@@ -150,8 +177,16 @@ const ChristmasTreeModel = () => {
 	const { nodes, materials } = data
 	const context = useContext(EditorContext)
 
+	const starMaterial = useMemo(() => {
+		return new THREE.MeshStandardMaterial({
+			...nodes.Star?.material,
+		})
+	}, [])
+
 	return (
 		<group position={[0, -1.5, 0]}>
+			<mesh {...meshOptions} geometry={nodes.Star?.geometry} material={starMaterial} />
+
 			<group ref={context?.treeRef}>
 				<TreeLeaf nodes={nodes} materials={materials} color={context?.treeColor} />
 			</group>
