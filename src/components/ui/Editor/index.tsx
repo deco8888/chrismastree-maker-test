@@ -1,59 +1,55 @@
 'use client'
 
+import { useEffect, useState } from 'react'
+
 import { EditorContext, useEditor } from '~/hooks/useEditor'
 
-import { DECORATIONS_BY_TYPE, TREE_COLORS } from './data'
-import { DecorationController } from './DecorationPreview/Controller'
 import { ChristmasTree } from './Model'
+import { EditorPanel } from './Panel'
 
 import style from './index.module.scss'
 
+const MODEL_PATH = '/assets/models/christmasTree.glb'
+
 export const Editor = () => {
 	const context = useEditor()
+	const [modelPath, setModelPath] = useState<string | null>(null)
+
+	/*-------------------------------
+		モデルを読み込む
+	-------------------------------*/
+	useEffect(() => {
+		const loadModel = async () => {
+			try {
+				const response = await fetch(MODEL_PATH)
+				const blob = await response.blob()
+				const url = URL.createObjectURL(blob)
+				setModelPath(url)
+			} catch (error) {
+				console.error('Error loading model:', error)
+			}
+		}
+
+		loadModel()
+	}, [])
 
 	return (
 		<EditorContext.Provider value={context}>
-			<div className={style.container}>
-				{/* モデル */}
-				<div className={style.model}>
-					<ChristmasTree />
-				</div>
+			{modelPath ? (
+				<div className={style.container}>
+					{/* モデル */}
+					<div className={style.model}>
+						<ChristmasTree />
+					</div>
 
-				{/* パネル */}
-				<div className={style.panel}>
-					<ul className={style.panel_colors}>
-						{TREE_COLORS.map((color, i) => (
-							<li className={style.panel_colors_item} key={i}>
-								<button
-									onClick={() => context?.setTreeColor(color.code)}
-									className={style.panel_colors_btn}
-									aria-label={color.label}
-									style={{ backgroundColor: color.code }}
-								>
-									{color.label}
-								</button>
-							</li>
-						))}
-					</ul>
-
-					<div>
-						<ul className={style.decoration}>
-							{DECORATIONS_BY_TYPE.map((decoration, i) => (
-								<li className={style.decoration_item} key={i}>
-									<button
-										onClick={() => context?.setSelectedDecoration(decoration)}
-										className={style.colors_item_btn}
-										aria-label={decoration.label}
-									>
-										{decoration.slug}
-									</button>
-								</li>
-							))}
-						</ul>
-						<DecorationController />
+					{/* パネル */}
+					<div className={style.panel}>
+						<EditorPanel />
 					</div>
 				</div>
-			</div>
+			) : (
+				<div>Loading...</div>
+			)}
 		</EditorContext.Provider>
 	)
 }

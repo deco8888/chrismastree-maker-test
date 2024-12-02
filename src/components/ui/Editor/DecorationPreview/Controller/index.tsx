@@ -1,18 +1,45 @@
 import { useContext, useEffect, useState } from 'react'
+import { ColorPicker, useColor } from 'react-color-palette'
+import 'react-color-palette/css'
 
 import { EditorContext } from '~/hooks/useEditor'
+
+import { notoSansJP } from '~/components/fonts'
 
 import style from './index.module.scss'
 
 export const DecorationController = () => {
 	const context = useContext(EditorContext)
-	const [count, setCount] = useState<number>(1)
+	const [color, setColor] = useColor('#9A9D9C')
+	const [count, setCount] = useState<number>(0)
 
+	/*-------------------------------
+		カラーを変更
+	-------------------------------*/
+	useEffect(() => {
+		context?.setDecorationByType(prev =>
+			prev.map(v =>
+				v.slug === context?.selectedDecoration?.slug
+					? {
+							...v,
+							setting: {
+								...v.setting,
+								color: color.hex,
+							},
+						}
+					: v,
+			),
+		)
+	}, [color])
+
+	/*-------------------------------
+		個数を変更
+	-------------------------------*/
 	const onCountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const currentCount = Number(e.target.value)
-		setCount(currentCount)
 
 		const targetDecoration = context?.decorationsByType?.find(v => v.slug === context.selectedDecoration?.slug)
+
 		if (!targetDecoration) return
 
 		const prevCount = targetDecoration.count
@@ -25,73 +52,52 @@ export const DecorationController = () => {
 
 			if (currentCount > prevCount) {
 				// 増やす
-				const availablePosition = context?.decoPositionList.find(v => v.isAvailable)
-				if (availablePosition) {
-					const slug = context.selectedDecoration?.slug || ''
-					const newDecoPosition = {
-						id: slug + '_' + currentCount,
-						slug: slug,
-						position: availablePosition.position,
-					}
-					context?.setDecorations(prev => [...prev, newDecoPosition])
-
-					// 使用した位置情報を更新
-					context?.setDecoPositionList(prev =>
-						prev.map(v => (v.slug === availablePosition.slug ? { ...v, isAvailable: false } : v)),
-					)
-				}
+				context?.addDecoration(prevCount, currentCount)
 			} else {
 				// 減らす
-				const targetDecorationList = targetDecoration.list
-				const targetDecorationItem = targetDecorationList?.pop()
-
-				if (targetDecorationItem) {
-					context?.setDecorationByType(v =>
-						v.map(v => (v.slug === context.selectedDecoration?.slug ? { ...v, list: targetDecorationList } : v)),
-					)
-
-					const decorationsList = context.decorations.filter(v => v.id !== targetDecorationItem.id)
-					context?.setDecorations(decorationsList)
-
-					context?.setDecoPositionList(prev =>
-						prev.map(v => (v.id == targetDecorationItem.id ? { ...v, isAvailable: true } : v)),
-					)
-				}
+				context?.subtractDecoration(currentCount)
 			}
 		}
 	}
 
 	useEffect(() => {
-		console.log(context?.decorationsByType)
-	}, [context?.decorationsByType])
+		const currentCount = context?.decorationsByType?.find(v => v.slug === context.selectedDecoration?.slug)?.count
+		setCount(currentCount ?? 0)
+	}, [context?.selectedDecoration, context?.decorationsByType])
 
 	return (
 		<div className={style.container}>
 			{/* カラーピッカー */}
 			<div className={style.colorPicker}>
-				<label className={style.label}>カラー</label>
-				<input type="color" />
+				<ColorPicker color={color} onChange={setColor} height={100} hideInput={['hex', 'rgb', 'hsv']} />
 			</div>
 
-			{/* サイズ */}
-			<div className={style.range}>
-				<label className={style.label}>サイズ</label>
-				<input className={style.range_input} name="size" min="0" max="5" step="1" type="range" />
-			</div>
+			<div className={style.block}>
+				{/* サイズ */}
+				<div className={style.item}>
+					<label htmlFor="size" className={`${style.item_label} ${notoSansJP.className}`}>
+						サイズ
+					</label>
+					<input id="size" className={style.item_input} name="size" min="0" max="5" step="1" type="range" />
+				</div>
 
-			{/* 個数 */}
-			<div className={style.range}>
-				<label className={style.label}>個数</label>
-				<input
-					className={style.range_input}
-					name="count"
-					min="1"
-					max="5"
-					step="1"
-					type="range"
-					value={count}
-					onChange={onCountChange}
-				/>
+				{/* 個数 */}
+				<div className={style.item}>
+					<label htmlFor="count" className={`${style.item_label} ${notoSansJP.className}`}>
+						個数
+					</label>
+					<input
+						id="count"
+						className={style.item_input}
+						name="count"
+						min="0"
+						max="27"
+						step="1"
+						type="range"
+						value={count ?? 0}
+						onChange={onCountChange}
+					/>
+				</div>
 			</div>
 		</div>
 	)

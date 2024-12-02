@@ -2,38 +2,14 @@
 
 .container {
 	position: relative;
-	display: flex;
-	flex-flow: column;
-	width: 100%;
-	min-height: 100vh;
-}
-
-.model {
-	position: relative;
-	width: 100%;
-	max-width: 500px;
-	margin-inline: auto;
-
-	&::after {
-		position: relative;
-		z-index: -1;
-		display: block;
-		width: 100%;
-		padding-top: get_percent(1080px, 850px);
-		content: '';
-	}
-}
-
-.panel {
-	position: relative;
 	flex-grow: 1;
 	background-color: rgba(#fff, 0.8);
+}
 
-	&_inner {
-		@include inner;
+.inner {
+	@include inner;
 
-		padding-block: 20px;
-	}
+	padding-block: 20px;
 }
 
 .tree {

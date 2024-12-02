@@ -1,5 +1,3 @@
-import { Suspense } from 'react'
-
 import AppGlobalProvider from '~/components/functional/AppGlobalProvider'
 import AuthProvider from '~/components/functional/AuthProvider'
 import QueryProvider from '~/components/functional/QueryProvider'
@@ -23,18 +21,16 @@ export default function RootLayout({
 		<html lang="ja">
 			<body>
 				<QueryProvider>
-					<Suspense>
-						<AppGlobalProvider>
-							<AuthProvider>
-								<div className={style.container}>
-									<div className={style.bg}></div>
-									<div className={style.inner}>
-										<div className={style.contents}>{children}</div>
-									</div>
+					<AppGlobalProvider>
+						<AuthProvider>
+							<div className={style.container}>
+								<div className={style.bg}></div>
+								<div className={style.inner}>
+									<div className={style.contents}>{children}</div>
 								</div>
-							</AuthProvider>
-						</AppGlobalProvider>
-					</Suspense>
+							</div>
+						</AuthProvider>
+					</AppGlobalProvider>
 				</QueryProvider>
 			</body>
 		</html>
