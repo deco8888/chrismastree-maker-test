@@ -1,0 +1,65 @@
+@use '~/styles/common' as *;
+
+.container {
+	position: relative;
+	padding: 20px 5px;
+}
+
+.colorPicker {
+	width: 80%;
+	max-width: 250px;
+}
+
+.block {
+	display: flex;
+	flex-flow: column;
+	row-gap: 10px;
+	justify-content: center;
+	margin-top: 25px;
+}
+
+.item {
+	display: grid;
+	grid-template-columns: get_em(120px, 26px) 1fr;
+	column-gap: 10px;
+	align-items: center;
+	font-size: get_size_pc(26px);
+
+	&_label {
+		font-weight: 500;
+		color: #525151;
+	}
+
+	&_input {
+		width: 100%;
+		height: 10px;
+		appearance: none;
+		cursor: pointer;
+		background: #cae2e6;
+		border: solid 2px #a0d3d8;
+		border-radius: 10px;
+		outline: 0;
+
+		&::-webkit-slider-thumb {
+			width: get_em(36px, 26px);
+			height: get_em(36px, 26px);
+			appearance: none;
+			background: #79ccd3;
+			border-radius: 50%;
+			box-shadow: 0 3px 6px 0 rgb(0 0 0 / 16%);
+		}
+
+		&::-moz-range-thumb {
+			width: get_em(36px, 26px);
+			height: get_em(36px, 26px);
+			background: #79ccd3;
+			border: none;
+			border-radius: 50%;
+			box-shadow: 0 3px 6px 0 rgb(0 0 0 / 16%);
+		}
+
+		&::-moz-focus-outer {
+			border: 0;
+		}
+	}
+}

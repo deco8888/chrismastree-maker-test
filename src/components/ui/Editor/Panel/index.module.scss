@@ -46,6 +46,7 @@
 	&_list {
 		display: grid;
 		grid-template-columns: repeat(6, 1fr);
+		gap: 10px;
 	}
 
 	&_item {
@@ -56,6 +57,10 @@
 			aspect-ratio: 1 / 1;
 			background-color: #e7e7e7;
 			border-radius: 5px;
+
+			&[data-selected='true'] {
+				border: solid 2px #a0d3d8;
+			}
 		}
 	}
 }

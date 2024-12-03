@@ -2,7 +2,7 @@
 
 import { Environment, OrbitControls, PerspectiveCamera, useGLTF } from '@react-three/drei'
 import { Canvas } from '@react-three/fiber'
-import { Bloom, EffectComposer } from '@react-three/postprocessing'
+import { Bloom, EffectComposer, ToneMapping } from '@react-three/postprocessing'
 import { CSSProperties, Suspense, useCallback, useContext, useEffect } from 'react'
 import * as THREE from 'three'
 
@@ -10,9 +10,9 @@ import { EditorContext } from '~/hooks/useEditor'
 
 import { ChristmasTreeGLTF } from '~/types/christmasTree'
 
+import { Decoration } from './Decoration'
 import { TreeLeaf } from './Leaf'
 import { Star } from './Star'
-import { DecorationPreview } from '../DecorationPreview'
 
 const MODEL_PATH = '/assets/models/christmasTree.glb'
 
@@ -21,7 +21,7 @@ const meshOptions = {
 	receiveShadow: true,
 }
 
-const useChristmasTreeModelScene = () => {
+const useEditorPreviewScene = () => {
 	/*-------------------------------
 		モデルを読み込む
 	-------------------------------*/
@@ -44,7 +44,6 @@ const useChristmasTreeModelScene = () => {
 					isAvailable: true,
 				}
 			})
-			.sort(() => Math.random() - 0.5)
 	}, [nodes])
 
 	return {
@@ -65,8 +64,8 @@ type ChristmasTreeModelSceneProps = {
  * @param children
  * @returns
  */
-const ChristmasTreeModelScene = ({ children }: ChristmasTreeModelSceneProps) => {
-	const data = useChristmasTreeModelScene()
+const EditorPreviewScene = ({ children }: ChristmasTreeModelSceneProps) => {
+	const data = useEditorPreviewScene()
 	const { nodes, camera, verticalFov, initDecoPositions } = data
 	const context = useContext(EditorContext)
 
@@ -91,12 +90,14 @@ const ChristmasTreeModelScene = ({ children }: ChristmasTreeModelSceneProps) => 
 					aspectRatio: 960 / 1080,
 				} as CSSProperties
 			}
-			gl={{ antialias: true, alpha: true, toneMapping: THREE.ACESFilmicToneMapping, toneMappingExposure: 1.0 }}
+			gl={{ antialias: true, alpha: true }}
 		>
 			{/* ライト */}
 			<ambientLight intensity={1} />
-			{/* <directionalLight intensity={1} position={nodes.FrontLight?.position} rotation={nodes.FrontLight?.rotation} />
-			<directionalLight intensity={1} position={nodes.BackLight?.position} rotation={nodes.BackLight?.rotation} /> */}
+			<directionalLight intensity={1} position={nodes.FrontLight?.position} rotation={nodes.FrontLight?.rotation} />
+			<directionalLight intensity={3} position={nodes.LeftLight?.position} rotation={nodes.LeftLight?.rotation} />
+			<directionalLight intensity={0.5} position={nodes.RightLight?.position} rotation={nodes.RightLight?.rotation} />
+			<directionalLight intensity={1} position={nodes.BackLight?.position} rotation={nodes.BackLight?.rotation} />
 
 			{/* 環境 */}
 			<Environment preset="forest" />
@@ -138,6 +139,7 @@ const ChristmasTreeModelScene = ({ children }: ChristmasTreeModelSceneProps) => 
 					luminanceThreshold={0} // 輝度しきい値
 					luminanceSmoothing={1.0} // 輝度しきい値の滑らかさ
 				/>
+				<ToneMapping adaptive={true} />
 			</EffectComposer>
 		</Canvas>
 	)
@@ -148,7 +150,7 @@ const ChristmasTreeModelScene = ({ children }: ChristmasTreeModelSceneProps) => 
  * @returns
  */
 const ChristmasTreeModel = () => {
-	const data = useChristmasTreeModelScene()
+	const data = useEditorPreviewScene()
 	const { nodes, materials } = data
 	const context = useContext(EditorContext)
 
@@ -166,14 +168,20 @@ const ChristmasTreeModel = () => {
 			<mesh {...meshOptions} geometry={nodes.Tree!.geometry} material={materials.tree} />
 
 			{/* 装飾品 */}
-			{context?.decorations.map((decoration, i) => (
-				<DecorationPreview
-					key={i}
-					position={decoration.position ?? new THREE.Vector3()}
-					modelPath={context?.decorationsByType.find(v => v.slug === decoration.slug)?.path ?? ''}
-					setting={context?.decorationsByType.find(v => v.slug === decoration.slug)?.setting}
-				/>
-			))}
+			{context?.decorations.map((decoration, i) => {
+				const targetDecoration = context?.decorationsByType.find(v => v.slug === decoration.slug)
+				if (!targetDecoration) return null
+
+				return (
+					<Decoration
+						key={i}
+						position={decoration.position ?? new THREE.Vector3()}
+						modelPath={targetDecoration.path ?? ''}
+						setting={targetDecoration.setting}
+						objType={targetDecoration.objType ?? ''}
+					/>
+				)
+			})}
 		</group>
 	)
 }
@@ -182,10 +190,10 @@ const ChristmasTreeModel = () => {
  * クリスマスツリーコンポーネント
  * @returns
  */
-export function ChristmasTree() {
+export function EditorPreview() {
 	return (
-		<ChristmasTreeModelScene>
+		<EditorPreviewScene>
 			<ChristmasTreeModel />
-		</ChristmasTreeModelScene>
+		</EditorPreviewScene>
 	)
 }

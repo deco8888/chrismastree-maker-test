@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from 'react'
+import { useContext, useEffect, useRef, useState } from 'react'
 import { ColorPicker, useColor } from 'react-color-palette'
 import 'react-color-palette/css'
 
@@ -10,8 +10,16 @@ import style from './index.module.scss'
 
 export const DecorationController = () => {
 	const context = useContext(EditorContext)
-	const [color, setColor] = useColor('#9A9D9C')
+	// カラー
+	const [color, setColor] = useColor(
+		context?.decorationsByType?.find(v => v.slug === context.selectedDecoration?.slug)?.setting?.color ?? '#9A9D9C',
+	)
+	// サイズ
+	const [size, setSize] = useState<number>(1)
+	// 個数
 	const [count, setCount] = useState<number>(0)
+
+	const isFirstRender = useRef(true)
 
 	/*-------------------------------
 		カラーを変更
@@ -33,36 +41,70 @@ export const DecorationController = () => {
 	}, [color])
 
 	/*-------------------------------
+		サイズを変更
+	-------------------------------*/
+	const onCountSize = (e: React.ChangeEvent<HTMLInputElement>) => {
+		setSize(Number(e.target.value))
+		context?.setDecorationByType(prev =>
+			prev.map(v =>
+				v.slug === context?.selectedDecoration?.slug
+					? {
+							...v,
+							setting: {
+								...v.setting,
+								size: Number(e.target.value),
+							},
+						}
+					: v,
+			),
+		)
+	}
+
+	const updateDecorationByType = (currentCount: number) => {
+		context?.setDecorationByType(prev =>
+			prev.map(v => (v.slug === context.selectedDecoration?.slug ? { ...v, count: currentCount } : v)),
+		)
+	}
+
+	/*-------------------------------
 		個数を変更
 	-------------------------------*/
 	const onCountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const currentCount = Number(e.target.value)
 
+		// タイプ別の装飾品情報を取得
 		const targetDecoration = context?.decorationsByType?.find(v => v.slug === context.selectedDecoration?.slug)
-
 		if (!targetDecoration) return
 
+		// 前回の個数を取得
 		const prevCount = targetDecoration.count
 		if (context == undefined || prevCount == undefined) return
 
-		if (currentCount !== prevCount) {
-			context?.setDecorationByType(prev =>
-				prev.map(v => (v.slug === context.selectedDecoration?.slug ? { ...v, count: currentCount } : v)),
-			)
+		// 使用可能な位置情報を取得
+		const availablePosition = context.decoPositionList.filter(v => v.isAvailable) ?? []
 
+		if (currentCount !== prevCount) {
 			if (currentCount > prevCount) {
+				if (availablePosition.length <= 0) return
+				updateDecorationByType(currentCount)
+
 				// 増やす
 				context?.addDecoration(prevCount, currentCount)
 			} else {
+				updateDecorationByType(currentCount)
+
 				// 減らす
 				context?.subtractDecoration(currentCount)
 			}
 		}
 	}
 
+	/*-------------------------------
+		初期値を設定
+	-------------------------------*/
 	useEffect(() => {
-		const currentCount = context?.decorationsByType?.find(v => v.slug === context.selectedDecoration?.slug)?.count
-		setCount(currentCount ?? 0)
+		const currentDecoration = context?.decorationsByType?.find(v => v.slug === context.selectedDecoration?.slug)
+		setCount(currentDecoration?.count ?? 0)
 	}, [context?.selectedDecoration, context?.decorationsByType])
 
 	return (
@@ -78,7 +120,17 @@ export const DecorationController = () => {
 					<label htmlFor="size" className={`${style.item_label} ${notoSansJP.className}`}>
 						サイズ
 					</label>
-					<input id="size" className={style.item_input} name="size" min="0" max="5" step="1" type="range" />
+					<input
+						id="size"
+						className={style.item_input}
+						name="size"
+						min="1"
+						max="5"
+						step="0.1"
+						type="range"
+						value={size ?? 1}
+						onChange={onCountSize}
+					/>
 				</div>
 
 				{/* 個数 */}
@@ -98,6 +150,10 @@ export const DecorationController = () => {
 						onChange={onCountChange}
 					/>
 				</div>
+
+				<button className={`${style.shuffle} ${notoSansJP.className}`} onClick={() => context?.shuffleDecorations()}>
+					位置シャッフル
+				</button>
 			</div>
 		</div>
 	)

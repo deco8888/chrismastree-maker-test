@@ -8,11 +8,13 @@ export interface DecorationsByType {
 	slug: string
 	label: string
 	path: string
+	objType: string
 	// size?: number
 	// color?: string
 	count?: number
 	list?: Decoration[]
 	setting?: DecorationSettings
+	controller?: JSX.Element
 }
 
 export interface Decoration {
@@ -25,6 +27,7 @@ export interface SelectedDecoration {
 	slug: string
 	label: string
 	path: string
+	objType: string
 }
 
 export interface DecoPositionItem {

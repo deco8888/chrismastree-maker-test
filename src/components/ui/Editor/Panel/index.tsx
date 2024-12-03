@@ -1,13 +1,12 @@
 'use client'
 
-import { useContext } from 'react'
+import { Fragment, useContext } from 'react'
 
 import { EditorContext } from '~/hooks/useEditor'
 
 import { notoSansJP } from '~/components/fonts'
 
 import { DECORATIONS_BY_TYPE, TREE_COLORS } from '../data'
-import { DecorationController } from '../DecorationPreview/Controller'
 
 import style from './index.module.scss'
 
@@ -43,13 +42,17 @@ export const EditorPanel = () => {
 									onClick={() => context?.setSelectedDecoration(decoration)}
 									className={style.decoration_item_btn}
 									aria-label={decoration.label}
+									data-selected={context?.selectedDecoration?.slug === decoration.slug}
 								>
 									{decoration.slug}
 								</button>
 							</li>
 						))}
 					</ul>
-					{context?.selectedDecoration && <DecorationController />}
+					{DECORATIONS_BY_TYPE.map(decoration => {
+						if (context?.selectedDecoration?.slug !== decoration.slug) return null
+						return <Fragment key={decoration.slug}>{decoration.controller}</Fragment>
+					})}
 				</div>
 			</div>
 		</div>

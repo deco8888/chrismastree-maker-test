@@ -1,6 +1,8 @@
 import { createContext, useCallback, useEffect, useRef, useState } from 'react'
 import * as THREE from 'three'
 
+import { arrayShuffle } from '~/libs/arrayShuffle'
+
 import { DecoPositionItem, Decoration, DecorationsByType, SelectedDecoration } from '~/types/editor'
 
 export type EditorContextType = ReturnType<typeof useEditor>
@@ -26,12 +28,42 @@ export const useEditor = () => {
 		装飾品をシャッフルする
 	-------------------------------*/
 	const shuffleDecorations = useCallback(() => {
+		if (!selectedDecoration?.slug) return
 		// 利用可能な位置情報を取得
-		const availablePosition = decoPositionList.filter(v => v.isAvailable)
+		const availablePosition = decoPositionList.filter(v => {
+			return v.isAvailable || v.usedBy?.startsWith(selectedDecoration.slug)
+		})
+		const shuffledPositions = arrayShuffle(availablePosition)
 
-		const shuffledPositions = availablePosition.sort(() => Math.random() - 0.5)
-		console.log(shuffledPositions)
-	}, [])
+		const updates = decorations.map((deco, i) => {
+			const newPosition = shuffledPositions[i]
+			if (newPosition && deco.slug === selectedDecoration.slug) {
+				return { ...deco, position: newPosition.position }
+			} else {
+				return deco
+			}
+		})
+
+		// 装飾品の位置を更新
+		setDecorations(prev =>
+			prev.map(v => {
+				const update = updates.find(item => item.id === v.id)
+				return update ? { ...v, position: update.position } : v
+			}),
+		)
+
+		// 使用した位置情報を更新
+		setDecoPositionList(prev =>
+			prev.map(v => {
+				const newDeco = updates.find(item => item.id === v.usedBy)
+				return newDeco
+					? { ...v, isAvailable: false, usedBy: newDeco.id }
+					: v.slug === selectedDecoration.slug
+						? { ...v, isAvailable: true, usedBy: undefined }
+						: v
+			}),
+		)
+	}, [selectedDecoration, decorations, decoPositionList])
 
 	/*-------------------------------
 		装飾品を追加(初回追加)
@@ -46,6 +78,7 @@ export const useEditor = () => {
 					id: selectedDecoration.slug + '_' + 1,
 					slug: selectedDecoration.slug,
 					position: availablePosition.position,
+					objType: selectedDecoration.objType,
 				}
 				setDecorations(prev => [...prev, newDecoPosition])
 
@@ -58,7 +91,7 @@ export const useEditor = () => {
 
 				// タイプ別の装飾品情報リストを更新
 				setDecorationByType(prev => {
-					if (prev.length > 0) {
+					if (prev.find(v => v.slug === selectedDecoration.slug)) {
 						return prev
 					} else {
 						return [...prev, { ...selectedDecoration, count: 1, list: [newDecoPosition] }]
@@ -79,10 +112,12 @@ export const useEditor = () => {
 			if (!slug || addCount <= 0) return
 
 			// 利用可能な位置情報を取得
-			const availablePositions = decoPositionList.filter(v => v.isAvailable).slice(0, addCount)
-			if (availablePositions.length === 0) return
+			const availablePositions = decoPositionList.filter(v => v.isAvailable)
+			if (availablePositions.length <= 0) return
 
-			const newCollections = availablePositions.map((pos, i) => ({
+			const shufflePositions = arrayShuffle(availablePositions).slice(0, addCount)
+
+			const newCollections = shufflePositions.map((pos, i) => ({
 				id: slug + '_' + (prevCount + (i + 1)),
 				slug: slug,
 				position: pos.position,
@@ -120,9 +155,11 @@ export const useEditor = () => {
 			// 削除される装飾品リスト
 			const subtractedDecorationList = targetDecorationList?.slice(currentCount) ?? []
 
-			if (updatedDecorationList) {
+			if (subtractedDecorationList.length) {
 				// 表示用装飾品情報リストを更新
-				setDecorations(prev => prev.filter(v => updatedDecorationList.some(item => item.id === v.id)))
+				setDecorations(prev => {
+					return prev.filter(v => !subtractedDecorationList.some(item => item.id == v.id))
+				})
 
 				// 使用していた位置情報を更新
 				setDecoPositionList(prev =>

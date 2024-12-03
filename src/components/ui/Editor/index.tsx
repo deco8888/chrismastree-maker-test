@@ -4,8 +4,8 @@ import { useEffect, useState } from 'react'
 
 import { EditorContext, useEditor } from '~/hooks/useEditor'
 
-import { ChristmasTree } from './Model'
 import { EditorPanel } from './Panel'
+import { EditorPreview } from './Preview'
 
 import style from './index.module.scss'
 
@@ -37,9 +37,9 @@ export const Editor = () => {
 		<EditorContext.Provider value={context}>
 			{modelPath ? (
 				<div className={style.container}>
-					{/* モデル */}
-					<div className={style.model}>
-						<ChristmasTree />
+					{/* プレビュー */}
+					<div className={style.preview}>
+						<EditorPreview />
 					</div>
 
 					{/* パネル */}

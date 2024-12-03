@@ -18,7 +18,7 @@ export const TreeLeaf = ({ nodes, color = '#9A9D9C' }: TreeLeafProps) => {
 		return new THREE.MeshStandardMaterial({
 			...nodes.LeafBottom?.material,
 			color: new THREE.Color(color),
-			emissiveIntensity: 0,
+			emissiveIntensity: 0.0,
 		})
 	}, [color])
 
