@@ -1,4 +1,5 @@
 'use client'
+
 import { useContext } from 'react'
 
 import { EditorContext } from '~/hooks/useEditor'
@@ -16,6 +17,7 @@ export const EditorPanel = () => {
 	return (
 		<div className={style.container}>
 			<div className={style.inner}>
+				{/* ツリー */}
 				<div className={style.tree}>
 					<p className={`${style.tree_title} ${notoSansJP.className}`}>ツリー</p>
 					<ul className={style.tree_colors}>
@@ -32,6 +34,7 @@ export const EditorPanel = () => {
 					</ul>
 				</div>
 
+				{/* 装飾 */}
 				<div className={style.decoration}>
 					<ul className={style.decoration_list}>
 						{DECORATIONS_BY_TYPE.map((decoration, i) => (

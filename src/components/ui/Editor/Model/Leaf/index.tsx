@@ -5,7 +5,6 @@ import { ChristmasTreeGLTF } from '~/types/christmasTree'
 
 type TreeLeafProps = {
 	nodes: ChristmasTreeGLTF['nodes']
-	materials: ChristmasTreeGLTF['materials']
 	color?: string
 }
 
@@ -14,9 +13,8 @@ const meshOptions = {
 	receiveShadow: true,
 }
 
-export const TreeLeaf = ({ nodes, materials, color = '#9A9D9C' }: TreeLeafProps) => {
+export const TreeLeaf = ({ nodes, color = '#9A9D9C' }: TreeLeafProps) => {
 	const leafMaterial = useMemo(() => {
-		console.log(nodes.LeafBottom?.material)
 		return new THREE.MeshStandardMaterial({
 			...nodes.LeafBottom?.material,
 			color: new THREE.Color(color),

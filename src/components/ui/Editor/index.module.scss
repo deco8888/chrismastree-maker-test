@@ -6,6 +6,7 @@
 	flex-flow: column;
 	width: 100%;
 	min-height: 100vh;
+	background-color: #1c2023;
 }
 
 .model {
@@ -27,7 +28,7 @@
 .panel {
 	position: relative;
 	flex-grow: 1;
-	background-color: rgba(#fff, 0.8);
+	background-color: #fff;
 
 	&_inner {
 		@include inner;

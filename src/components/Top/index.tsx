@@ -1,12 +1,18 @@
 'use client'
 
 import Link from 'next/link'
+import { useContext } from 'react'
+
+import { login } from '~/libs/firebase/auth'
 
 import { anton } from '../fonts'
+import { AuthContext } from '../functional/AuthProvider'
 
 import style from './index.module.scss'
 
 export default function TopPage() {
+	const { user } = useContext(AuthContext)
+
 	return (
 		<div className={style.container}>
 			<div className={style.inner}>
@@ -23,7 +29,7 @@ export default function TopPage() {
 				</h2>
 
 				<div className={`${style.start} ${anton.className}`}>
-					<Link href="/create">START</Link>
+					{user?.id ? <Link href="/create">START</Link> : <button onClick={login}>ログイン</button>}
 				</div>
 			</div>
 		</div>

@@ -7,6 +7,7 @@ export type EditorContextType = ReturnType<typeof useEditor>
 export const EditorContext = createContext<EditorContextType | undefined>(undefined)
 
 export const useEditor = () => {
+	const [starColor, setStarColor] = useState<string>('#FFCC00')
 	const [treeColor, setTreeColor] = useState<string>('#9A9D9C')
 	// タイプ別の装飾品情報リスト
 	const [decorationsByType, setDecorationByType] = useState<DecorationsByType[]>([])
@@ -145,6 +146,8 @@ export const useEditor = () => {
 	)
 
 	return {
+		starColor,
+		setStarColor,
 		treeColor,
 		setTreeColor,
 		decorations,

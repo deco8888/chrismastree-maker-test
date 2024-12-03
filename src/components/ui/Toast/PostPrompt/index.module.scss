@@ -1,0 +1,19 @@
+@use '~/styles/common' as *;
+
+.toast {
+	position: relative;
+	left: 50%;
+	z-index: 1000;
+	width: get_size_pc(500px);
+	padding: get_em(20px, 20px) get_em(25px, 20px);
+	font-size: get_size_pc(25px);
+	background: #fff;
+	border: 1px solid #000;
+	border-radius: 10px;
+	transform: translateX(-50%);
+
+	&_text {
+		font-weight: 700;
+		text-align: center;
+	}
+}

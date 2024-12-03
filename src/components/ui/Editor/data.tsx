@@ -8,7 +8,7 @@ export const TREE_COLORS = [
 	},
 	{
 		slug: 'yellow-green',
-		code: '#53F176',
+		code: '#29af47',
 		label: '黄緑',
 	},
 	{

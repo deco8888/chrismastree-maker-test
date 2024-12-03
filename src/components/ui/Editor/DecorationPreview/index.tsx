@@ -21,6 +21,7 @@ const LoadedDecorationPreview = (props: DecorationPreviewProps) => {
 	const material = useMemo(() => {
 		const material = (nodes.Ball as THREE.Mesh).material as THREE.MeshStandardMaterial
 		material.color = new THREE.Color(setting?.color ?? '#9A9D9C')
+		material.emissiveIntensity = 0
 		return material
 	}, [setting?.color])
 

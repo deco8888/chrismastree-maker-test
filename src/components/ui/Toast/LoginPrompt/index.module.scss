@@ -1,0 +1,36 @@
+@use '~/styles/common' as *;
+
+.toast {
+	position: relative;
+	left: 50%;
+	font-size: get_size_pc(27px);
+	transform: translateX(-50%);
+	// width: get_size_pc(500px);
+	// padding: get_em(20px, 20px) get_em(25px, 20px);
+	// background: #fff;
+	// border: 1px solid #000;
+	// border-radius: 10px;
+
+	&_text {
+		font-weight: 700;
+		text-align: center;
+	}
+
+	&_btn {
+		display: flex;
+		justify-content: center;
+		padding: get_em(24px, 27px) get_em(40px, 27px) get_em(26px, 27px);
+		margin: get_em(25px, 27px) auto 0;
+		// フォント
+		font-size: 0.9em;
+		font-weight: 700;
+		color: #fff;
+		text-align: center;
+		background-color: #000;
+		border-radius: get_size_pc(10px);
+
+		@include min-md {
+			border-radius: get_px_to_vw(10px, $sp-viewport);
+		}
+	}
+}
