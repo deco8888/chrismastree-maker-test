@@ -1,11 +1,15 @@
-import CreatePage from '~/components/Create'
+import CreatePage from '~/components/pages/Create'
+
+import AuthGuard from '~/components/functional/AuthGuard'
 
 import styles from './page.module.scss'
 
 export default function Create() {
 	return (
-		<main className={styles.main}>
-			<CreatePage />
-		</main>
+		<AuthGuard>
+			<main className={styles.main}>
+				<CreatePage />
+			</main>
+		</AuthGuard>
 	)
 }

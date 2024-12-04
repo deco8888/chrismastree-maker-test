@@ -3,10 +3,10 @@
 import { Environment, OrbitControls, PerspectiveCamera, useGLTF } from '@react-three/drei'
 import { Canvas } from '@react-three/fiber'
 import { Bloom, EffectComposer, ToneMapping } from '@react-three/postprocessing'
-import { CSSProperties, Suspense, useCallback, useContext, useEffect } from 'react'
+import { CSSProperties, useCallback, useContext, useEffect, useMemo } from 'react'
 import * as THREE from 'three'
 
-import { EditorContext } from '~/hooks/useEditor'
+import { EditorContext, EditorContextType } from '~/hooks/useEditor'
 
 import { ChristmasTreeGLTF } from '~/types/christmasTree'
 
@@ -73,10 +73,10 @@ const EditorPreviewScene = ({ children }: ChristmasTreeModelSceneProps) => {
 		装飾品の位置情報を取得
 	-------------------------------*/
 	useEffect(() => {
-		if (!context || context.decoPositionList.length > 0) return
+		if (!context?.decoPositionList || context.decoPositionList.length > 0) return
 		const positions = initDecoPositions()
 		context?.setDecoPositionList(positions)
-	}, [context, data])
+	}, [context?.decoPositionList, data.initDecoPositions])
 
 	return (
 		<Canvas
@@ -113,7 +113,7 @@ const EditorPreviewScene = ({ children }: ChristmasTreeModelSceneProps) => {
 			/>
 
 			{/* モデル */}
-			<Suspense fallback={null}>{children}</Suspense>
+			{children}
 
 			{/* カメラコントロール */}
 			<OrbitControls
@@ -154,20 +154,42 @@ const ChristmasTreeModel = () => {
 	const { nodes, materials } = data
 	const context = useContext(EditorContext)
 
+	const TreeBase = useMemo(
+		() => (
+			<>
+				{/* 星 */}
+				<Star nodes={nodes} color={context?.starColor} />
+
+				{/* 葉っぱ */}
+				<group ref={context?.treeRef}>
+					<TreeLeaf nodes={nodes} color={context?.treeColor} />
+				</group>
+
+				{/* 木の幹 */}
+				<mesh {...meshOptions} geometry={nodes.Tree!.geometry} material={materials.tree} />
+			</>
+		),
+		[nodes, materials, context?.starColor, context?.treeColor],
+	)
+
 	return (
 		<group position={[0, -1.5, 0]}>
-			{/* 星 */}
-			<Star nodes={nodes} color={context?.starColor} />
-
-			{/* 葉っぱ */}
-			<group ref={context?.treeRef}>
-				<TreeLeaf nodes={nodes} color={context?.treeColor} />
-			</group>
-
-			{/* 木の幹 */}
-			<mesh {...meshOptions} geometry={nodes.Tree!.geometry} material={materials.tree} />
+			{/* ツリー + 基本パーツ */}
+			{TreeBase}
 
 			{/* 装飾品 */}
+			<ChristmasTreeDecoration context={context} />
+		</group>
+	)
+}
+
+/**
+ * クリスマスツリー装飾品
+ * @returns
+ */
+const ChristmasTreeDecoration = ({ context }: { context: EditorContextType | undefined }) => {
+	return (
+		<group>
 			{context?.decorations.map((decoration, i) => {
 				const targetDecoration = context?.decorationsByType.find(v => v.slug === decoration.slug)
 				if (!targetDecoration) return null

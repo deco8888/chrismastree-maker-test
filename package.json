@@ -30,6 +30,7 @@
 		"react-color-palette": "^7.3.0",
 		"react-dom": "^18",
 		"react-range": "^1.10.0",
+		"react-spinners": "^0.14.1",
 		"sass": "^1.72.0",
 		"wolfy87-eventemitter": "^5.2.9"
 	},

@@ -1,4 +1,4 @@
-import { useContext, useEffect, useRef, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { ColorPicker, useColor } from 'react-color-palette'
 import 'react-color-palette/css'
 
@@ -18,8 +18,6 @@ export const DecorationController = () => {
 	const [size, setSize] = useState<number>(1)
 	// 個数
 	const [count, setCount] = useState<number>(0)
-
-	const isFirstRender = useRef(true)
 
 	/*-------------------------------
 		カラーを変更

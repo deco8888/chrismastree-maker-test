@@ -1,17 +1,21 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 
 import { EditorContext, useEditor } from '~/hooks/useEditor'
 
+import { AuthContext } from '~/components/functional/AuthProvider'
+
 import { EditorPanel } from './Panel'
 import { EditorPreview } from './Preview'
+import { Loading } from '../Loading'
 
 import style from './index.module.scss'
 
 const MODEL_PATH = '/assets/models/christmasTree.glb'
 
 export const Editor = () => {
+	const { loading } = useContext(AuthContext)
 	const context = useEditor()
 	const [modelPath, setModelPath] = useState<string | null>(null)
 
@@ -35,21 +39,23 @@ export const Editor = () => {
 
 	return (
 		<EditorContext.Provider value={context}>
-			{modelPath ? (
-				<div className={style.container}>
-					{/* プレビュー */}
-					<div className={style.preview}>
-						<EditorPreview />
-					</div>
+			<div className={style.container}>
+				{modelPath && !loading ? (
+					<>
+						{/* プレビュー */}
+						<div className={style.preview}>
+							<EditorPreview />
+						</div>
 
-					{/* パネル */}
-					<div className={style.panel}>
-						<EditorPanel />
-					</div>
-				</div>
-			) : (
-				<div>Loading...</div>
-			)}
+						{/* パネル */}
+						<div className={style.panel}>
+							<EditorPanel />
+						</div>
+					</>
+				) : (
+					<Loading bg={true} />
+				)}
+			</div>
 		</EditorContext.Provider>
 	)
 }
