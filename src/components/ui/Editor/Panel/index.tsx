@@ -1,7 +1,7 @@
 'use client'
 
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Fragment, useContext, useEffect, useRef, useState } from 'react'
+import { Fragment, useContext, useRef, useState } from 'react'
 import { FormProvider, SubmitHandler, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 
@@ -46,8 +46,6 @@ const useEditorPanel = () => {
 		if (isSendingRef.current || !user || !user.id) return
 		setIsSending(true)
 
-		console.log('submitHandler', data)
-
 		try {
 			const result = await treeService.saveTree(data, user.id)
 
@@ -65,10 +63,6 @@ const useEditorPanel = () => {
 			setIsSending(false)
 		}
 	}
-
-	useEffect(() => {
-		console.log('errors', methods.formState.errors)
-	}, [methods.formState])
 
 	return {
 		context,

@@ -209,8 +209,6 @@ const ChristmasTreeDecoration = ({ context }: { context: EditorContextType | und
 				const targetDecoration = context?.decorationsByType.find(v => v.slug === decoration.slug)
 				if (!targetDecoration) return null
 
-				console.log(decoration)
-
 				return (
 					<Decoration
 						key={i}
