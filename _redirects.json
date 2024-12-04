@@ -1,0 +1,9 @@
+{
+	"redirects": [
+		{
+			"source": "/(.*)",
+			"destination": "/_next/static/[hash]/pages/$1",
+			"type": 301
+		}
+	]
+}

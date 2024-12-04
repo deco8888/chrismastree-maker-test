@@ -1,5 +1,21 @@
 {
   "projects": {
     "default": "christmastree-maker-test"
+  },
+  "hosting": {
+    "public": ".next",
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ],
+    "redirects": [
+      {
+        "source": "**",
+        "destination": "/_next/static/[hash]/pages/$1",
+        "type": 301
+      }
+    ]
   }
 }

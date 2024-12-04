@@ -1,8 +1,6 @@
 import { useGLTF } from '@react-three/drei'
-import { useContext, useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import * as THREE from 'three'
-
-import { EditorContext } from '~/hooks/useEditor'
 
 import { DecorationSettings } from '~/types/editor'
 
@@ -16,7 +14,6 @@ type DecorationProps = {
 }
 
 const LoadedDecoration = (props: DecorationProps) => {
-	const context = useContext(EditorContext)
 	const { position, rotation, modelPath, setting, onDragEnd } = props
 	const { nodes } = useGLTF(`/assets/models/decoration/${modelPath}`)
 	useGLTF.setDecoderPath('/node_modules/three/examples/jsm/libs/draco/')
@@ -43,14 +40,17 @@ const LoadedDecoration = (props: DecorationProps) => {
 	}, [setting?.size])
 
 	return (
-		<mesh ref={meshRef} position={position}>
+		<mesh
+			ref={meshRef}
+			position={position}
+			rotation={rotation ? rotation : (nodes[props.objType] as THREE.Mesh).rotation}
+		>
 			{nodes[props.objType] && (
 				<group {...props} dispose={null}>
 					<mesh
 						castShadow
 						receiveShadow
 						geometry={(nodes[props.objType] as THREE.Mesh).geometry}
-						rotation={rotation ? rotation : (nodes[props.objType] as THREE.Mesh).rotation}
 						material={material}
 						scale={scale}
 					/>

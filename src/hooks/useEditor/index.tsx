@@ -122,6 +122,7 @@ export const useEditor = () => {
 				id: slug + '_' + (prevCount + (i + 1)),
 				slug: slug,
 				position: pos.position,
+				rotation: pos.rotation ?? undefined,
 			}))
 
 			// 表示用装飾品情報リストを更新
@@ -142,6 +143,10 @@ export const useEditor = () => {
 		},
 		[decorationsByType, selectedDecoration],
 	)
+
+	useEffect(() => {
+		console.log(decoPositionList)
+	}, [decoPositionList])
 
 	/*-------------------------------
 		装飾品を削除
