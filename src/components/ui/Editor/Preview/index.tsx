@@ -205,7 +205,7 @@ const ChristmasTreeModel = () => {
 const ChristmasTreeDecoration = ({ context }: { context: EditorContextType | undefined }) => {
 	return (
 		<group>
-			{context?.decorations.map((decoration, i) => {
+			{context?.displayedDecorations.map((decoration, i) => {
 				const targetDecoration = context?.decorationsByType.find(v => v.slug === decoration.slug)
 				if (!targetDecoration) return null
 

@@ -12,12 +12,12 @@ export interface DecorationsByType {
 	// size?: number
 	// color?: string
 	count?: number
-	list?: Decoration[]
+	list?: DisplayedDecoration[] // 使用されている装飾品のリスト
 	setting?: DecorationSettings
 	controller?: JSX.Element
 }
 
-export interface Decoration {
+export interface DisplayedDecoration {
 	id: string
 	slug: string
 	position?: THREE.Vector3
@@ -37,5 +37,5 @@ export interface DecoPositionItem {
 	position: THREE.Vector3
 	rotation?: THREE.Euler
 	isAvailable: boolean
-	usedBy?: string // 使われている装飾品のID
+	usedBy?: string // 使用されている装飾品のID
 }

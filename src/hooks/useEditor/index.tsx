@@ -3,7 +3,7 @@ import * as THREE from 'three'
 
 import { arrayShuffle } from '~/libs/arrayShuffle'
 
-import { DecoPositionItem, Decoration, DecorationsByType, SelectedDecoration } from '~/types/editor'
+import { DecoPositionItem, DisplayedDecoration, DecorationsByType, SelectedDecoration } from '~/types/editor'
 
 export type EditorContextType = ReturnType<typeof useEditor>
 export const EditorContext = createContext<EditorContextType | undefined>(undefined)
@@ -14,12 +14,12 @@ export const useEditor = () => {
 	// タイプ別の装飾品情報リスト
 	const [decorationsByType, setDecorationByType] = useState<DecorationsByType[]>([])
 	// 選択された装飾品情報リスト
-	const [decorations, setDecorations] = useState<Decoration[]>([])
+	const [displayedDecorations, setDisplayedDecorations] = useState<DisplayedDecoration[]>([])
 	// 選択された装飾品情報
 	const [selectedDecoration, setSelectedDecoration] = useState<SelectedDecoration>()
 	const [decoPositionList, setDecoPositionList] = useState<DecoPositionItem[]>([])
 
-	const [decoSettingList, setDecoSettingList] = useState<Decoration[]>([])
+	const [decoSettingList, setDecoSettingList] = useState<DisplayedDecoration[]>([])
 
 	// 木の幹
 	const treeRef = useRef<THREE.Group>(null)
@@ -35,7 +35,7 @@ export const useEditor = () => {
 		})
 		const shuffledPositions = arrayShuffle(availablePosition)
 
-		const updates = decorations.map((deco, i) => {
+		const updates = displayedDecorations.map((deco, i) => {
 			const newPosition = shuffledPositions[i]
 			if (newPosition && deco.slug === selectedDecoration.slug) {
 				return { ...deco, position: newPosition.position }
@@ -45,7 +45,7 @@ export const useEditor = () => {
 		})
 
 		// 装飾品の位置を更新
-		setDecorations(prev =>
+		setDisplayedDecorations(prev =>
 			prev.map(v => {
 				const update = updates.find(item => item.id === v.id)
 				return update ? { ...v, position: update.position } : v
@@ -63,7 +63,7 @@ export const useEditor = () => {
 						: v
 			}),
 		)
-	}, [selectedDecoration, decorations, decoPositionList])
+	}, [selectedDecoration, displayedDecorations, decoPositionList])
 
 	/*-------------------------------
 		装飾品を追加(初回追加)
@@ -81,7 +81,7 @@ export const useEditor = () => {
 					rotation: availablePosition.rotation ?? undefined,
 					objType: selectedDecoration.objType,
 				}
-				setDecorations(prev => [...prev, newDecoPosition])
+				setDisplayedDecorations(prev => [...prev, newDecoPosition])
 
 				// 使用した位置情報を更新
 				setDecoPositionList(prev =>
@@ -125,7 +125,7 @@ export const useEditor = () => {
 			}))
 
 			// 表示用装飾品情報リストを更新
-			setDecorations(prev => [...prev, ...newCollections])
+			setDisplayedDecorations(prev => [...prev, ...newCollections])
 
 			// 使用した位置情報を更新
 			setDecoPositionList(prev =>
@@ -158,7 +158,7 @@ export const useEditor = () => {
 
 			if (subtractedDecorationList.length) {
 				// 表示用装飾品情報リストを更新
-				setDecorations(prev => {
+				setDisplayedDecorations(prev => {
 					return prev.filter(v => !subtractedDecorationList.some(item => item.id == v.id))
 				})
 
@@ -188,8 +188,8 @@ export const useEditor = () => {
 		setStarColor,
 		treeColor,
 		setTreeColor,
-		decorations,
-		setDecorations,
+		displayedDecorations,
+		setDisplayedDecorations,
 		selectedDecoration,
 		setSelectedDecoration,
 		decoPositionList,

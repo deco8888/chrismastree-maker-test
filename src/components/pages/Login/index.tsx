@@ -48,7 +48,9 @@ export default function LoginPage() {
 					<span className={style.title_char}>Maker</span>
 				</h2>
 				<p> 続けるにはログインしてください</p>
-				<button onClick={login}>ログイン</button>
+				<button type="button" onClick={login}>
+					ログイン
+				</button>
 			</div>
 		</div>
 	)

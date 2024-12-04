@@ -40,7 +40,7 @@ export default function TopPage() {
 									START
 								</Link>
 							) : (
-								<button className={`${style.start_btn_login} ${notoSansJP.className}`} onClick={login}>
+								<button type="button" className={`${style.start_btn_login} ${notoSansJP.className}`} onClick={login}>
 									ログイン
 								</button>
 							)}

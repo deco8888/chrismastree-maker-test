@@ -1,5 +1,7 @@
 import { useContext, useEffect, useState } from 'react'
 import { ColorPicker, useColor } from 'react-color-palette'
+import { useFormContext } from 'react-hook-form'
+import { toast } from 'sonner'
 import 'react-color-palette/css'
 
 import { EditorContext } from '~/hooks/useEditor'
@@ -10,6 +12,8 @@ import style from './index.module.scss'
 
 export const DecorationController = () => {
 	const context = useContext(EditorContext)
+	const { setValue } = useFormContext()
+
 	// カラー
 	const [color, setColor] = useColor(
 		context?.decorationsByType?.find(v => v.slug === context.selectedDecoration?.slug)?.setting?.color ?? '#9A9D9C',
@@ -36,6 +40,9 @@ export const DecorationController = () => {
 					: v,
 			),
 		)
+
+		// フォーム更新
+		setValue('decorationsByType', context?.decorationsByType)
 	}, [color])
 
 	/*-------------------------------
@@ -56,6 +63,9 @@ export const DecorationController = () => {
 					: v,
 			),
 		)
+
+		// フォーム更新
+		setValue('decorationsByType', context?.decorationsByType)
 	}
 
 	const updateDecorationByType = (currentCount: number) => {
@@ -79,20 +89,32 @@ export const DecorationController = () => {
 		if (context == undefined || prevCount == undefined) return
 
 		// 使用可能な位置情報を取得
-		const availablePosition = context.decoPositionList.filter(v => v.isAvailable) ?? []
+		const availablePositions = context.decoPositionList.filter(v => v.isAvailable) ?? []
 
 		if (currentCount !== prevCount) {
 			if (currentCount > prevCount) {
-				if (availablePosition.length <= 0) return
-				updateDecorationByType(currentCount)
+				if (availablePositions.length <= 0) {
+					toast.error('利用可能な位置がありません')
+					return
+				}
 
-				// 増やす
-				context?.addDecoration(prevCount, currentCount)
+				try {
+					updateDecorationByType(currentCount)
+
+					// 増やす
+					context?.addDecoration(prevCount, currentCount)
+				} catch (error) {
+					toast.error('装飾の追加に失敗しました')
+				}
 			} else {
-				updateDecorationByType(currentCount)
+				try {
+					updateDecorationByType(currentCount)
 
-				// 減らす
-				context?.subtractDecoration(currentCount)
+					// 減らす
+					context?.subtractDecoration(currentCount)
+				} catch (error) {
+					toast.error('装飾の削除に失敗しました')
+				}
 			}
 		}
 	}
@@ -103,6 +125,7 @@ export const DecorationController = () => {
 	useEffect(() => {
 		const currentDecoration = context?.decorationsByType?.find(v => v.slug === context.selectedDecoration?.slug)
 		setCount(currentDecoration?.count ?? 0)
+		setValue('decorationsByType', context?.decorationsByType)
 	}, [context?.selectedDecoration, context?.decorationsByType])
 
 	return (
@@ -149,7 +172,11 @@ export const DecorationController = () => {
 					/>
 				</div>
 
-				<button className={`${style.shuffle} ${notoSansJP.className}`} onClick={() => context?.shuffleDecorations()}>
+				<button
+					type="button"
+					className={`${style.shuffle} ${notoSansJP.className}`}
+					onClick={() => context?.shuffleDecorations()}
+				>
 					位置シャッフル
 				</button>
 			</div>

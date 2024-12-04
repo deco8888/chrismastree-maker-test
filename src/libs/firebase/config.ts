@@ -1,6 +1,6 @@
 import { initializeApp, getApps, FirebaseApp } from 'firebase/app';
-import { connectAuthEmulator, getAuth, GoogleAuthProvider } from 'firebase/auth';
-import { connectFirestoreEmulator, getFirestore } from 'firebase/firestore';
+import { getAuth, GoogleAuthProvider } from 'firebase/auth';
+import { getFirestore } from 'firebase/firestore';
 
 const firebaseConfig: {
 	[key: string]: string | undefined
@@ -25,10 +25,11 @@ export const db = getFirestore( firebaseApp );
 // Initialize Auth Providers
 export const provider = new GoogleAuthProvider();
 
+
 // Enable emulators in development
-if ( process.env.NODE_ENV === 'development' ) {
+// if ( process.env.NODE_ENV === 'development' ) {
 
-	connectAuthEmulator( auth, 'http://localhost:9099' );
-	connectFirestoreEmulator( db, 'localhost', 8080 );
+// 	connectAuthEmulator( auth, 'http://localhost:9099' );
+// 	connectFirestoreEmulator( db, 'localhost', 8080 );
 
-}
+// }

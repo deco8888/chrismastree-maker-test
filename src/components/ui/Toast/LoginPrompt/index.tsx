@@ -12,7 +12,7 @@ export const LoginPrompt = (props: LoginPromptProps) => {
 	return (
 		<div className={style.toast}>
 			<p className={`${style.toast_text} ${notoSansJP.className}`}>{props.text}にはログインが必要です</p>
-			<button className={`${style.toast_btn} ${notoSansJP.className}`} onClick={login}>
+			<button type="button" className={`${style.toast_btn} ${notoSansJP.className}`} onClick={login}>
 				Googleでログイン
 			</button>
 		</div>

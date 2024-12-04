@@ -13,6 +13,7 @@
 		"git-clean": "git fetch --prune && git branch | egrep -v '\\*|develop|main|master|release|prd|dev|stg' | xargs git branch -d"
 	},
 	"dependencies": {
+		"@hookform/resolvers": "^3.9.1",
 		"@next/third-parties": "^14.1.4",
 		"@react-three/drei": "^9.117.3",
 		"@react-three/fiber": "^8.17.10",
@@ -32,7 +33,9 @@
 		"react-range": "^1.10.0",
 		"react-spinners": "^0.14.1",
 		"sass": "^1.72.0",
-		"wolfy87-eventemitter": "^5.2.9"
+		"sonner": "^1.7.0",
+		"wolfy87-eventemitter": "^5.2.9",
+		"zod": "^3.23.8"
 	},
 	"devDependencies": {
 		"@types/body-scroll-lock": "^3.1.2",
