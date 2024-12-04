@@ -16,6 +16,8 @@ import { Star } from './Star'
 
 const MODEL_PATH = '/assets/models/christmasTree.glb'
 
+const DEG_TO_RAD = Math.PI / 180
+
 const meshOptions = {
 	castShadow: true,
 	receiveShadow: true,
@@ -38,9 +40,22 @@ const useEditorPreviewScene = () => {
 		return Object.entries(nodes)
 			.filter(([key, _]) => key.startsWith('decoPosition'))
 			.map(([key, value]) => {
+				// 装飾品(キャンディ)の初期回転位置を取得
+				let rotation: THREE.Euler | undefined = undefined
+
+				const candyRotation = value.userData.candyRotation
+				if (candyRotation) {
+					rotation = new THREE.Euler(
+						candyRotation[0] * DEG_TO_RAD,
+						candyRotation[2] * DEG_TO_RAD,
+						-candyRotation[1] * DEG_TO_RAD,
+					)
+				}
+
 				return {
 					slug: key,
 					position: new THREE.Vector3(value.position.x * 0.5, value.position.y * 0.5, value.position.z * 0.5),
+					rotation: rotation,
 					isAvailable: true,
 				}
 			})
@@ -194,10 +209,13 @@ const ChristmasTreeDecoration = ({ context }: { context: EditorContextType | und
 				const targetDecoration = context?.decorationsByType.find(v => v.slug === decoration.slug)
 				if (!targetDecoration) return null
 
+				console.log(decoration)
+
 				return (
 					<Decoration
 						key={i}
 						position={decoration.position ?? new THREE.Vector3()}
+						rotation={decoration.rotation ?? undefined}
 						modelPath={targetDecoration.path ?? ''}
 						setting={targetDecoration.setting}
 						objType={targetDecoration.objType ?? ''}

@@ -78,6 +78,7 @@ export const useEditor = () => {
 					id: selectedDecoration.slug + '_' + 1,
 					slug: selectedDecoration.slug,
 					position: availablePosition.position,
+					rotation: availablePosition.rotation ?? undefined,
 					objType: selectedDecoration.objType,
 				}
 				setDecorations(prev => [...prev, newDecoPosition])

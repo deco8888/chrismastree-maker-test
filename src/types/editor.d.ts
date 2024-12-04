@@ -21,6 +21,7 @@ export interface Decoration {
 	id: string
 	slug: string
 	position?: THREE.Vector3
+	rotation?: THREE.Euler
 }
 
 export interface SelectedDecoration {
@@ -34,6 +35,7 @@ export interface DecoPositionItem {
 	id?: string
 	slug: string
 	position: THREE.Vector3
+	rotation?: THREE.Euler
 	isAvailable: boolean
 	usedBy?: string // 使われている装飾品のID
 }
