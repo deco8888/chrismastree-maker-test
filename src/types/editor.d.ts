@@ -22,6 +22,7 @@ export interface DisplayedDecoration {
 	slug: string
 	position?: THREE.Vector3
 	rotation?: THREE.Euler
+	originalRotation?: THREE.Euler
 }
 
 export interface SelectedDecoration {
@@ -36,6 +37,7 @@ export interface DecoPositionItem {
 	slug: string
 	position: THREE.Vector3
 	rotation?: THREE.Euler
+	originalRotation?: THREE.Euler
 	isAvailable: boolean
 	usedBy?: string // 使用されている装飾品のID
 }

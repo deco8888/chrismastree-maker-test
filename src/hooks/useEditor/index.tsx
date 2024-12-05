@@ -21,6 +21,8 @@ export const useEditor = () => {
 
 	const [decoSettingList, setDecoSettingList] = useState<DisplayedDecoration[]>([])
 
+	const [modelList, setModelList] = useState<Record<string, THREE.Mesh>>({})
+
 	// 木の幹
 	const treeRef = useRef<THREE.Group>(null)
 
@@ -48,7 +50,7 @@ export const useEditor = () => {
 		setDisplayedDecorations(prev =>
 			prev.map(v => {
 				const update = updates.find(item => item.id === v.id)
-				return update ? { ...v, position: update.position } : v
+				return update ? { ...v, position: update.position, rotation: update.rotation } : v
 			}),
 		)
 
@@ -79,6 +81,7 @@ export const useEditor = () => {
 					slug: selectedDecoration.slug,
 					position: availablePosition.position,
 					rotation: availablePosition.rotation ?? undefined,
+					originalRotation: availablePosition.originalRotation ?? undefined,
 					objType: selectedDecoration.objType,
 				}
 				setDisplayedDecorations(prev => [...prev, newDecoPosition])
@@ -116,14 +119,16 @@ export const useEditor = () => {
 			const availablePositions = decoPositionList.filter(v => v.isAvailable)
 			if (availablePositions.length <= 0) return
 
-			const shufflePositions = arrayShuffle(availablePositions).slice(0, addCount)
+			const shufflePositions = availablePositions.slice(0, addCount)
 
-			const newCollections = shufflePositions.map((pos, i) => ({
-				id: slug + '_' + (prevCount + (i + 1)),
-				slug: slug,
-				position: pos.position,
-				rotation: pos.rotation ?? undefined,
-			}))
+			const newCollections = shufflePositions.map((pos, i) => {
+				return {
+					id: slug + '_' + (prevCount + (i + 1)),
+					slug: slug,
+					position: pos.position,
+					rotation: pos.rotation ?? undefined,
+				}
+			})
 
 			// 表示用装飾品情報リストを更新
 			setDisplayedDecorations(prev => [...prev, ...newCollections])
@@ -140,13 +145,12 @@ export const useEditor = () => {
 			setDecorationByType(prev =>
 				prev.map(v => (v.slug === slug ? { ...v, list: [...(v.list ?? []), ...newCollections] } : v)),
 			)
+
+			console.log('addDecoration', shufflePositions)
+			console.log('addDecoration', displayedDecorations)
 		},
 		[decorationsByType, selectedDecoration],
 	)
-
-	useEffect(() => {
-		console.log(decoPositionList)
-	}, [decoPositionList])
 
 	/*-------------------------------
 		装飾品を削除
@@ -207,5 +211,7 @@ export const useEditor = () => {
 		setDecorationByType,
 		addDecoration,
 		subtractDecoration,
+		modelList,
+		setModelList,
 	}
 }

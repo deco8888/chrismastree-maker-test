@@ -9,6 +9,7 @@ import * as THREE from 'three'
 import { EditorContext, EditorContextType } from '~/hooks/useEditor'
 
 import { ChristmasTreeGLTF } from '~/types/christmasTree'
+import { DecorationsByType, DisplayedDecoration } from '~/types/editor'
 
 import { Decoration } from './Decoration'
 import { TreeLeaf } from './Leaf'
@@ -42,6 +43,7 @@ const useEditorPreviewScene = () => {
 			.map(([key, value]) => {
 				// 装飾品(キャンディ)の初期回転位置を取得
 				let rotation: THREE.Euler | undefined = undefined
+				let originalRotation: THREE.Euler | undefined = undefined
 
 				const candyRotation = value.userData.candyRotation
 				if (candyRotation) {
@@ -49,13 +51,17 @@ const useEditorPreviewScene = () => {
 						candyRotation[0] * DEG_TO_RAD,
 						candyRotation[2] * DEG_TO_RAD,
 						-candyRotation[1] * DEG_TO_RAD,
+						'ZYX',
 					)
+
+					originalRotation = new THREE.Euler(candyRotation[0], candyRotation[2], -candyRotation[1])
 				}
 
 				return {
 					slug: key,
 					position: new THREE.Vector3(value.position.x * 0.5, value.position.y * 0.5, value.position.z * 0.5),
 					rotation: rotation,
+					originalRotation: originalRotation,
 					isAvailable: true,
 				}
 			})
@@ -71,6 +77,8 @@ const useEditorPreviewScene = () => {
 }
 
 type ChristmasTreeModelSceneProps = {
+	data: ReturnType<typeof useEditorPreviewScene>
+	context: EditorContextType
 	children: React.ReactNode
 }
 
@@ -79,10 +87,9 @@ type ChristmasTreeModelSceneProps = {
  * @param children
  * @returns
  */
-const EditorPreviewScene = ({ children }: ChristmasTreeModelSceneProps) => {
-	const data = useEditorPreviewScene()
-	const { nodes, camera, verticalFov, initDecoPositions } = data
-	const context = useContext(EditorContext)
+const EditorPreviewScene = (props: ChristmasTreeModelSceneProps) => {
+	const { nodes, camera, verticalFov, initDecoPositions } = props.data
+	const context = props.context
 
 	/*-------------------------------
 		装飾品の位置情報を取得
@@ -91,7 +98,7 @@ const EditorPreviewScene = ({ children }: ChristmasTreeModelSceneProps) => {
 		if (!context?.decoPositionList || context.decoPositionList.length > 0) return
 		const positions = initDecoPositions()
 		context?.setDecoPositionList(positions)
-	}, [context?.decoPositionList, data.initDecoPositions])
+	}, [context?.decoPositionList, initDecoPositions])
 
 	return (
 		<Canvas
@@ -128,7 +135,7 @@ const EditorPreviewScene = ({ children }: ChristmasTreeModelSceneProps) => {
 			/>
 
 			{/* モデル */}
-			{children}
+			{props.children}
 
 			{/* カメラコントロール */}
 			<OrbitControls
@@ -160,14 +167,18 @@ const EditorPreviewScene = ({ children }: ChristmasTreeModelSceneProps) => {
 	)
 }
 
+type ChristmasTreeModelProps = {
+	data: ReturnType<typeof useEditorPreviewScene>
+	context: EditorContextType
+}
+
 /**
  * クリスマスツリーモデル
  * @returns
  */
-const ChristmasTreeModel = () => {
-	const data = useEditorPreviewScene()
-	const { nodes, materials } = data
-	const context = useContext(EditorContext)
+const ChristmasTreeModel = (props: ChristmasTreeModelProps) => {
+	const { nodes, materials } = props.data
+	const context = props.context
 
 	const TreeBase = useMemo(
 		() => (
@@ -193,20 +204,33 @@ const ChristmasTreeModel = () => {
 			{TreeBase}
 
 			{/* 装飾品 */}
-			<ChristmasTreeDecoration context={context} />
+			{context.displayedDecorations && context.decorationsByType && (
+				<ChristmasTreeDecoration
+					decorations={context.displayedDecorations}
+					decorationsByType={context.decorationsByType}
+				/>
+			)}
 		</group>
 	)
+}
+
+type ChristmasTreeDecorationProps = {
+	decorations: DisplayedDecoration[]
+	decorationsByType: DecorationsByType[]
 }
 
 /**
  * クリスマスツリー装飾品
  * @returns
  */
-const ChristmasTreeDecoration = ({ context }: { context: EditorContextType | undefined }) => {
+const ChristmasTreeDecoration = (props: ChristmasTreeDecorationProps) => {
+	const { decorations, decorationsByType } = props
+	if (decorations.length === 0 || decorationsByType.length === 0) return null
+
 	return (
 		<group>
-			{context?.displayedDecorations.map((decoration, i) => {
-				const targetDecoration = context?.decorationsByType.find(v => v.slug === decoration.slug)
+			{decorations.map((decoration, i) => {
+				const targetDecoration = decorationsByType.find(v => v.slug === decoration.slug)
 				if (!targetDecoration) return null
 
 				return (
@@ -229,9 +253,13 @@ const ChristmasTreeDecoration = ({ context }: { context: EditorContextType | und
  * @returns
  */
 export function EditorPreview() {
+	const data = useEditorPreviewScene()
+	const context = useContext(EditorContext)
+	if (!context) return null
+
 	return (
-		<EditorPreviewScene>
-			<ChristmasTreeModel />
+		<EditorPreviewScene data={data} context={context}>
+			<ChristmasTreeModel data={data} context={context} />
 		</EditorPreviewScene>
 	)
 }
