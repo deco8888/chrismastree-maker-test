@@ -21,7 +21,9 @@ export const useEditor = () => {
 
 	const [decoSettingList, setDecoSettingList] = useState<DisplayedDecoration[]>([])
 
-	const [modelList, setModelList] = useState<Record<string, THREE.Mesh>>({})
+	const [modelList, setModelList] = useState<{
+		[slug: string]: THREE.Mesh
+	}>({})
 
 	// 木の幹
 	const treeRef = useRef<THREE.Group>(null)
@@ -33,6 +35,7 @@ export const useEditor = () => {
 		if (!selectedDecoration?.slug) return
 		// 利用可能な位置情報を取得
 		const availablePosition = decoPositionList.filter(v => {
+			console.log('v', v.isAvailable, v.usedBy?.startsWith(selectedDecoration.slug))
 			return v.isAvailable || v.usedBy?.startsWith(selectedDecoration.slug)
 		})
 		const shuffledPositions = arrayShuffle(availablePosition)
@@ -40,7 +43,7 @@ export const useEditor = () => {
 		const updates = displayedDecorations.map((deco, i) => {
 			const newPosition = shuffledPositions[i]
 			if (newPosition && deco.slug === selectedDecoration.slug) {
-				return { ...deco, position: newPosition.position }
+				return { ...deco, position: newPosition.position, rotation: newPosition.rotation }
 			} else {
 				return deco
 			}

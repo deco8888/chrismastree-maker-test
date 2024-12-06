@@ -208,6 +208,7 @@ const ChristmasTreeModel = (props: ChristmasTreeModelProps) => {
 				<ChristmasTreeDecoration
 					decorations={context.displayedDecorations}
 					decorationsByType={context.decorationsByType}
+					modelList={context.modelList}
 				/>
 			)}
 		</group>
@@ -217,6 +218,9 @@ const ChristmasTreeModel = (props: ChristmasTreeModelProps) => {
 type ChristmasTreeDecorationProps = {
 	decorations: DisplayedDecoration[]
 	decorationsByType: DecorationsByType[]
+	modelList: {
+		[slug: string]: THREE.Mesh
+	}
 }
 
 /**
@@ -224,7 +228,7 @@ type ChristmasTreeDecorationProps = {
  * @returns
  */
 const ChristmasTreeDecoration = (props: ChristmasTreeDecorationProps) => {
-	const { decorations, decorationsByType } = props
+	const { decorations, decorationsByType, modelList } = props
 	if (decorations.length === 0 || decorationsByType.length === 0) return null
 
 	return (
@@ -241,6 +245,7 @@ const ChristmasTreeDecoration = (props: ChristmasTreeDecorationProps) => {
 						modelPath={targetDecoration.path ?? ''}
 						setting={targetDecoration.setting}
 						objType={targetDecoration.objType ?? ''}
+						model={modelList[targetDecoration.objType] ?? null}
 					/>
 				)
 			})}
@@ -255,6 +260,7 @@ const ChristmasTreeDecoration = (props: ChristmasTreeDecorationProps) => {
 export function EditorPreview() {
 	const data = useEditorPreviewScene()
 	const context = useContext(EditorContext)
+
 	if (!context) return null
 
 	return (

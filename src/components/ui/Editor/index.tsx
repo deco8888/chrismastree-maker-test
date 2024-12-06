@@ -6,13 +6,14 @@ import { EditorContext, useEditor } from '~/hooks/useEditor'
 
 import { AuthContext } from '~/components/functional/AuthProvider'
 
+import { loadModelsUrl } from '~/libs/loadModels'
+
+import { MODEL_DATA } from './data'
 import { EditorPanel } from './Panel'
 import { EditorPreview } from './Preview'
 import { Loading } from '../Loading'
 
 import style from './index.module.scss'
-
-const MODEL_PATH = '/assets/models/christmasTree.glb'
 
 const EditorComponent = () => {
 	const context = useEditor()
@@ -36,33 +37,26 @@ const EditorComponent = () => {
 
 export const Editor = () => {
 	const { loading } = useContext(AuthContext)
-	const [modelPath, setModelPath] = useState<string | null>(null)
+
+	const [modelUrl, setModelUrl] = useState<any | null>(null)
 	const isLoading = useRef<boolean>(false)
 
 	/*-------------------------------
 		モデルを読み込む
 	-------------------------------*/
 	useEffect(() => {
-		if (modelPath !== null || isLoading.current == true) return
-		isLoading.current = true
+		;(async () => {
+			if (isLoading.current == false) {
+				isLoading.current = true
 
-		const loadModel = async () => {
-			try {
-				const response = await fetch(MODEL_PATH)
-				const blob = await response.blob()
-				const url = URL.createObjectURL(blob)
-				setModelPath(url)
-				isLoading.current = false
-			} catch (error) {
-				console.error('Error loading model:', error)
+				const modelsUrl = await loadModelsUrl(MODEL_DATA)
+				setModelUrl(modelsUrl)
 				isLoading.current = false
 			}
-		}
-
-		loadModel()
+		})()
 	}, [])
 
-	if (modelPath == null || loading) return <Loading bg={true} />
+	if (modelUrl == null || loading) return <Loading bg={true} />
 
 	return <EditorComponent />
 }

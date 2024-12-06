@@ -6,46 +6,6 @@ import { EditorContext } from '~/hooks/useEditor'
 
 import { DecorationSettings } from '~/types/editor'
 
-const useLoadModel = (modelPath: string, objType: string): THREE.Mesh | undefined | null => {
-	const context = useContext(EditorContext)
-	const isLoading = useRef<boolean>(false)
-	const { nodes } = useGLTF(`/assets/models/decoration/${modelPath}`)
-	useGLTF.setDecoderPath('/node_modules/three/examples/jsm/libs/draco/')
-
-	if (nodes[objType] === undefined) return null
-	const model = nodes[objType] as THREE.Mesh
-
-	context?.setModelList(prev => ({
-		...prev,
-		[modelPath]: model,
-	}))
-	isLoading.current = false
-	return model
-
-	// return useMemo(() => {
-	// 	if (isLoading.current || !context?.modelList) return null
-	// 	isLoading.current = true
-
-	// 	if (context.modelList[modelPath]) {
-	// 		isLoading.current = false
-	// 		return context.modelList[modelPath]
-	// 	} else {
-	// 		const { nodes } = useGLTF(`/assets/models/decoration/${modelPath}`)
-	// 		useGLTF.setDecoderPath('/node_modules/three/examples/jsm/libs/draco/')
-
-	// 		if (nodes[objType] === undefined) return null
-	// 		const model = nodes[objType] as THREE.Mesh
-
-	// 		context?.setModelList(prev => ({
-	// 			...prev,
-	// 			[modelPath]: model,
-	// 		}))
-	// 		isLoading.current = false
-	// 		return model
-	// 	}
-	// }, [context?.modelList, modelPath, objType])
-}
-
 type DecorationProps = {
 	objType: string
 	position: THREE.Vector3
@@ -53,14 +13,44 @@ type DecorationProps = {
 	modelPath: string
 	setting?: DecorationSettings
 	onDragEnd?: any
+	model: THREE.Mesh | null
 }
 
+/**
+ * 新規追加の場合、useGLTFでモデルを読み込む
+ * @param props
+ * @returns
+ */
 const LoadedDecoration = (props: DecorationProps) => {
-	const { position, rotation, modelPath, setting, objType } = props
+	const context = useContext(EditorContext)
+	const { modelPath, objType } = props
+	const { nodes } = useGLTF(`/assets/models/decoration/${modelPath}`)
+	useGLTF.setDecoderPath('/node_modules/three/examples/jsm/libs/draco/')
+
+	useEffect(() => {
+		if (!nodes[objType]) return
+		context?.setModelList(prev => {
+			if (!prev[objType]) {
+				prev[objType] = nodes[objType] as THREE.Mesh
+			}
+			return prev
+		})
+	}, [nodes, objType])
+
+	if (!nodes[objType]) return null
+
+	return <DecorationItem {...props} model={nodes[objType] as THREE.Mesh} />
+}
+
+/**
+ * 装飾品の設定
+ * @param props
+ * @returns
+ */
+const DecorationItem = (props: DecorationProps) => {
+	const { position, rotation, setting, model } = props
 	const [scale, setScale] = useState<number>(1)
 	const meshRef = useRef<THREE.Mesh>(null)
-
-	const model = useLoadModel(modelPath, objType)
 
 	/*-------------------------------
 		ジオメトリ設定
@@ -108,8 +98,15 @@ const LoadedDecoration = (props: DecorationProps) => {
 	)
 }
 
+/**
+ * 装飾品
+ * @param props
+ * @returns
+ */
 export const Decoration = (props: DecorationProps) => {
-	if (!props.modelPath) return null
-
-	return <LoadedDecoration {...props} />
+	if (props.model) {
+		return <DecorationItem {...props} model={props.model} />
+	} else {
+		return <LoadedDecoration {...props} />
+	}
 }

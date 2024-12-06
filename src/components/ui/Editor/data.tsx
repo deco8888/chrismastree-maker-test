@@ -21,6 +21,21 @@ export const TREE_COLORS = [
 	},
 ]
 
+export const MODEL_DATA = [
+	{
+		slug: 'christmasTree',
+		path: 'christmasTree.glb',
+	},
+	{
+		slug: 'ball',
+		path: 'decoration/ball.glb',
+	},
+	{
+		slug: 'candy',
+		path: 'decoration/candy.glb',
+	},
+]
+
 export const DECORATIONS_BY_TYPE: DecorationsByType[] = [
 	{
 		slug: 'ball',
