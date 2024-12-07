@@ -8,6 +8,10 @@ import { DecoPositionItem, DisplayedDecoration, DecorationsByType, SelectedDecor
 export type EditorContextType = ReturnType<typeof useEditor>
 export const EditorContext = createContext<EditorContextType | undefined>(undefined)
 
+type UpdatesItem = DisplayedDecoration & {
+	positionSlug: string
+}
+
 export const useEditor = () => {
 	const [starColor, setStarColor] = useState<string>('#FFCC00')
 	const [treeColor, setTreeColor] = useState<string>('#9A9D9C')
@@ -35,19 +39,25 @@ export const useEditor = () => {
 		if (!selectedDecoration?.slug) return
 		// 利用可能な位置情報を取得
 		const availablePosition = decoPositionList.filter(v => {
-			console.log('v', v.isAvailable, v.usedBy?.startsWith(selectedDecoration.slug))
 			return v.isAvailable || v.usedBy?.startsWith(selectedDecoration.slug)
 		})
-		const shuffledPositions = arrayShuffle(availablePosition)
 
-		const updates = displayedDecorations.map((deco, i) => {
+		const shuffledPositions = arrayShuffle(availablePosition)
+		const displayDecorationList = displayedDecorations.filter(v => v.slug === selectedDecoration.slug)
+
+		const updates = displayDecorationList.map((deco, i) => {
 			const newPosition = shuffledPositions[i]
 			if (newPosition && deco.slug === selectedDecoration.slug) {
-				return { ...deco, position: newPosition.position, rotation: newPosition.rotation }
+				return {
+					...deco,
+					position: newPosition.position,
+					positionSlug: newPosition.slug,
+					rotation: newPosition.rotation,
+				}
 			} else {
 				return deco
 			}
-		})
+		}) as UpdatesItem[]
 
 		// 装飾品の位置を更新
 		setDisplayedDecorations(prev =>
@@ -57,17 +67,32 @@ export const useEditor = () => {
 			}),
 		)
 
+		// console.log('updates', updates)
+		// console.log('decoPositionList', decoPositionList)
+
 		// 使用した位置情報を更新
-		setDecoPositionList(prev =>
-			prev.map(v => {
-				const newDeco = updates.find(item => item.id === v.usedBy)
-				return newDeco
-					? { ...v, isAvailable: false, usedBy: newDeco.id }
-					: v.slug === selectedDecoration.slug
-						? { ...v, isAvailable: true, usedBy: undefined }
-						: v
-			}),
-		)
+		setDecoPositionList(prev => {
+			const list = prev.map(v => {
+				if (v.usedBy?.startsWith(selectedDecoration.slug)) {
+					return { ...v, isAvailable: true, usedBy: undefined }
+				} else {
+					return v
+				}
+			})
+
+			console.log('decoPositionList', decoPositionList)
+			console.log('list', list)
+
+			return list.map(v => {
+				const newDeco = updates.find(item => item.positionSlug === v.slug)
+
+				if (newDeco) {
+					return { ...v, isAvailable: false, usedBy: newDeco.id }
+				} else {
+					return v
+				}
+			})
+		})
 	}, [selectedDecoration, displayedDecorations, decoPositionList])
 
 	/*-------------------------------
@@ -84,7 +109,6 @@ export const useEditor = () => {
 					slug: selectedDecoration.slug,
 					position: availablePosition.position,
 					rotation: availablePosition.rotation ?? undefined,
-					originalRotation: availablePosition.originalRotation ?? undefined,
 					objType: selectedDecoration.objType,
 				}
 				setDisplayedDecorations(prev => [...prev, newDecoPosition])
@@ -148,9 +172,6 @@ export const useEditor = () => {
 			setDecorationByType(prev =>
 				prev.map(v => (v.slug === slug ? { ...v, list: [...(v.list ?? []), ...newCollections] } : v)),
 			)
-
-			console.log('addDecoration', shufflePositions)
-			console.log('addDecoration', displayedDecorations)
 		},
 		[decorationsByType, selectedDecoration],
 	)

@@ -1,5 +1,4 @@
-import { useContext, useEffect, useState } from 'react'
-import { ColorPicker, useColor } from 'react-color-palette'
+import { useContext, useEffect, useRef, useState } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { toast } from 'sonner'
 import 'react-color-palette/css'
@@ -7,6 +6,7 @@ import 'react-color-palette/css'
 import { EditorContext } from '~/hooks/useEditor'
 
 import { notoSansJP } from '~/components/fonts'
+import { DecoPositionItem } from '~/types/editor'
 
 import style from './index.module.scss'
 
@@ -15,13 +15,18 @@ export const DecorationController = () => {
 	const { setValue } = useFormContext()
 
 	// カラー
-	const [color, setColor] = useColor(
-		context?.decorationsByType?.find(v => v.slug === context.selectedDecoration?.slug)?.setting?.color ?? '#9A9D9C',
+	const [color, setColor] = useState(
+		context?.decorationsByType?.find(v => v.slug === context.selectedDecoration?.slug)?.setting?.color ?? [],
 	)
 	// サイズ
 	const [size, setSize] = useState<number>(1)
 	// 個数
 	const [count, setCount] = useState<number>(0)
+
+	const [isAvailable, setIsAvailable] = useState<boolean>(true)
+	const [maxCount, setMaxCount] = useState<number>()
+
+	const availablePositionsRef = useRef<DecoPositionItem[]>([])
 
 	/*-------------------------------
 		カラーを変更
@@ -34,7 +39,7 @@ export const DecorationController = () => {
 							...v,
 							setting: {
 								...v.setting,
-								color: color.hex,
+								color: color,
 							},
 						}
 					: v,
@@ -69,8 +74,18 @@ export const DecorationController = () => {
 	}
 
 	const updateDecorationByType = (currentCount: number) => {
+		const currentDecoration = context?.decorationsByType?.filter(v => v.slug !== context.selectedDecoration?.slug)
+		const otherTotal = currentDecoration?.reduce((acc, cur) => acc + (cur.count ?? 0), 0) ?? 0
+
+		const count =
+			otherTotal && maxCount
+				? otherTotal + currentCount >= maxCount
+					? maxCount - otherTotal
+					: currentCount
+				: currentCount
+
 		context?.setDecorationByType(prev =>
-			prev.map(v => (v.slug === context.selectedDecoration?.slug ? { ...v, count: currentCount } : v)),
+			prev.map(v => (v.slug === context.selectedDecoration?.slug ? { ...v, count: count } : v)),
 		)
 	}
 
@@ -90,21 +105,24 @@ export const DecorationController = () => {
 
 		// 使用可能な位置情報を取得
 		const availablePositions = context.decoPositionList.filter(v => v.isAvailable) ?? []
+		availablePositionsRef.current = availablePositions
 
 		if (currentCount !== prevCount) {
 			if (currentCount > prevCount) {
 				if (availablePositions.length <= 0) {
-					toast.error('利用可能な位置がありません')
+					if (isAvailable == true) {
+						toast.error('利用可能な位置がありません')
+					}
 					return
-				}
+				} else {
+					try {
+						updateDecorationByType(currentCount)
 
-				try {
-					updateDecorationByType(currentCount)
-
-					// 増やす
-					context?.addDecoration(prevCount, currentCount)
-				} catch (error) {
-					toast.error('装飾の追加に失敗しました')
+						// 増やす
+						context?.addDecoration(prevCount, currentCount)
+					} catch (error) {
+						toast.error('装飾の追加に失敗しました')
+					}
 				}
 			} else {
 				try {
@@ -128,11 +146,53 @@ export const DecorationController = () => {
 		setValue('decorationsByType', context?.decorationsByType)
 	}, [context?.selectedDecoration, context?.decorationsByType])
 
+	useEffect(() => {
+		if (!context?.decoPositionList) return
+
+		if (maxCount == undefined) {
+			setMaxCount(context.decoPositionList.length)
+		}
+
+		setIsAvailable(context.decoPositionList.filter(v => v.isAvailable)?.length > 0)
+	}, [context?.decoPositionList])
+
 	return (
 		<div className={style.container}>
 			{/* カラーピッカー */}
 			<div className={style.colorPicker}>
-				<ColorPicker color={color} onChange={setColor} height={100} hideInput={['hex', 'rgb', 'hsv']} />
+				<p className={`${style.item_label} ${notoSansJP.className}`}>カラー</p>
+				<ul className={style.colorPicker_list}>
+					{['#f44336', '#e91e63', '#9c27b0', '#673ab7', '#3f51b5', '#2196f3'].map((color, i) => (
+						<li className={style.colorPicker_item} key={i}>
+							<input
+								type="checkbox"
+								id={`color-${i}`}
+								name="color"
+								className={style.colorPicker_input}
+								onClick={() => {
+									setColor(prev => {
+										if (prev.includes('#9A9D9C')) {
+											return prev.filter(v => v !== '#9A9D9C')
+										}
+
+										if (prev.includes(color)) {
+											return prev.filter(v => v !== color)
+										} else {
+											return [...prev, color]
+										}
+									})
+								}}
+								disabled={!color.includes(color)}
+							/>
+							<label
+								className={style.colorPicker_label}
+								htmlFor={`color-${i}`}
+								data-active={!color.includes(color)}
+								style={{ backgroundColor: color }}
+							></label>
+						</li>
+					))}
+				</ul>
 			</div>
 
 			<div className={style.block}>
@@ -152,10 +212,11 @@ export const DecorationController = () => {
 						value={size ?? 1}
 						onChange={onCountSize}
 					/>
+					<p className={`${style.item_value} ${notoSansJP.className}`}>{size}</p>
 				</div>
 
 				{/* 個数 */}
-				<div className={style.item}>
+				<div className={style.item} data-available={isAvailable}>
 					<label htmlFor="count" className={`${style.item_label} ${notoSansJP.className}`}>
 						個数
 					</label>
@@ -170,6 +231,7 @@ export const DecorationController = () => {
 						value={count ?? 0}
 						onChange={onCountChange}
 					/>
+					<p className={`${style.item_value} ${notoSansJP.className}`}>{count}</p>
 				</div>
 
 				<button

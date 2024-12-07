@@ -1,3 +1,5 @@
+import { Toaster } from 'sonner'
+
 import AppGlobalProvider from '~/components/functional/AppGlobalProvider'
 import AuthProvider from '~/components/functional/AuthProvider'
 import QueryProvider from '~/components/functional/QueryProvider'
@@ -29,6 +31,7 @@ export default function RootLayout({
 									<div className={style.contents}>{children}</div>
 								</div>
 							</div>
+							<Toaster position="bottom-center" richColors={true} duration={3000} expand={false} closeButton={true} />
 						</AuthProvider>
 					</AppGlobalProvider>
 				</QueryProvider>

@@ -91,6 +91,7 @@ export const EditorPanel = () => {
 										className={style.tree_colors_btn}
 										aria-label={color.label}
 										style={{ backgroundColor: color.code }}
+										data-selected={context?.treeColor === color.code}
 									></button>
 								</li>
 							))}
@@ -119,12 +120,12 @@ export const EditorPanel = () => {
 							return <Fragment key={decoration.slug}>{decoration.controller}</Fragment>
 						})}
 					</div>
-				</div>
 
-				{/* 保存ボタン */}
-				<button type="submit" disabled={isSending} className={`${style.saveButton} ${notoSansJP.className}`}>
-					{isSending ? '保存中...' : '保存する'}
-				</button>
+					{/* 保存ボタン */}
+					<button type="submit" disabled={isSending} className={`${style.saveButton} ${notoSansJP.className}`}>
+						{isSending ? '保存中...' : '保存する'}
+					</button>
+				</div>
 			</form>
 		</FormProvider>
 	)

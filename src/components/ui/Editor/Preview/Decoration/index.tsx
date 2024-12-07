@@ -14,6 +14,7 @@ type DecorationProps = {
 	setting?: DecorationSettings
 	onDragEnd?: any
 	model: THREE.Mesh | null
+	type: 'new' | 'clone'
 }
 
 /**
@@ -58,17 +59,36 @@ const DecorationItem = (props: DecorationProps) => {
 	const geometry = useMemo(() => {
 		const geometry = (model as THREE.Mesh).geometry
 		return geometry
-	}, [model, props.objType])
+	}, [model])
 
 	/*-------------------------------
 		マテリアル設定
 	-------------------------------*/
+
 	const material = useMemo(() => {
-		const material = (model as THREE.Mesh).material as THREE.MeshStandardMaterial
-		material.color = new THREE.Color(setting?.color ?? '#9A9D9C')
+		let material = (model as THREE.Mesh).material as THREE.MeshStandardMaterial
+		const newMaterial = new THREE.MeshStandardMaterial()
+		Object.keys(material).forEach(key => {
+			if (!['color', 'type', 'isMaterial', 'isMeshStandardMaterial'].includes(key) && key in newMaterial) {
+				const materialKey = key as keyof THREE.MeshStandardMaterial
+				newMaterial.setValues({ [key]: material[materialKey] })
+			}
+		})
+		material = newMaterial
+
+		const color = setting?.color ? setting.color[Math.floor(Math.random() * setting.color.length)] : '#9A9D9C'
+		material.color = new THREE.Color(color)
 		material.emissiveIntensity = 0
 		return material
-	}, [model, props.objType, setting?.color])
+	}, [])
+
+	useEffect(() => {
+		if (meshRef.current === null) return
+		const material = meshRef.current.material as THREE.MeshStandardMaterial
+		const color = setting?.color ? setting.color[Math.floor(Math.random() * setting.color.length)] : '#9A9D9C'
+		material.color = new THREE.Color(color)
+		material.needsUpdate = true
+	}, [setting?.color])
 
 	/*-------------------------------
 		サイズ設定
@@ -103,10 +123,10 @@ const DecorationItem = (props: DecorationProps) => {
  * @param props
  * @returns
  */
-export const Decoration = (props: DecorationProps) => {
+export const Decoration = (props: Omit<DecorationProps, 'type'>) => {
 	if (props.model) {
-		return <DecorationItem {...props} model={props.model} />
+		return <DecorationItem {...props} model={props.model} type="clone" />
 	} else {
-		return <LoadedDecoration {...props} />
+		return <LoadedDecoration {...props} type="new" />
 	}
 }

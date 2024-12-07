@@ -14,19 +14,19 @@
 
 .tree {
 	position: relative;
-	display: flex;
+	display: grid;
+	grid-template-columns: auto 1fr;
 	column-gap: 20px;
 	align-items: center;
 	width: 100%;
 
 	&_colors {
 		display: grid;
-		grid-template-columns: repeat(3, 1fr);
+		grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
 		gap: 5px;
 
 		&_item {
 			display: flex;
-			width: 40px;
 		}
 
 		&_btn {
@@ -36,6 +36,10 @@
 			color: #403535;
 			cursor: pointer;
 			border-radius: 5px;
+
+			&[data-selected='true'] {
+				border: solid 3px #79ccd3;
+			}
 		}
 	}
 }
@@ -59,8 +63,25 @@
 			border-radius: 5px;
 
 			&[data-selected='true'] {
-				border: solid 2px #a0d3d8;
+				border: solid 3px #79ccd3;
 			}
 		}
+	}
+}
+
+.saveButton {
+	display: block;
+	width: max-content;
+	padding: 5px 10px 6px;
+	margin-inline: auto;
+	margin-top: 20px;
+	font-size: get_size_pc(34px);
+	font-weight: 500;
+	color: #fff;
+	background-color: #79ccd3;
+	border-radius: 5px;
+
+	@include min-md {
+		font-size: get_px_to_vw(34px, $sp-viewport);
 	}
 }

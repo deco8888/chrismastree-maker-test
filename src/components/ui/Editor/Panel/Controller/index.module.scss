@@ -2,25 +2,57 @@
 
 .container {
 	position: relative;
-	padding: 20px 5px;
+	padding: 20px;
+	margin-top: 20px;
+	background-color: rgba(#e7e7e7, 0.5);
+	border-radius: 5px;
 }
 
 .colorPicker {
-	width: 80%;
-	max-width: 250px;
+	width: 100%;
+
+	&_list {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
+		gap: 5px;
+		margin-top: 10px;
+	}
+
+	&_item {
+		width: 100%;
+		aspect-ratio: 1 / 1;
+		overflow: hidden;
+		border-radius: 5px;
+	}
+
+	&_label {
+		display: block;
+		width: 100%;
+		height: 100%;
+		cursor: pointer;
+		border-radius: 5px;
+
+		input:checked + & {
+			border: solid 3px #79ccd3;
+		}
+	}
+
+	&_input {
+		display: none;
+	}
 }
 
 .block {
 	display: flex;
 	flex-flow: column;
-	row-gap: 10px;
+	row-gap: 15px;
 	justify-content: center;
 	margin-top: 25px;
 }
 
 .item {
 	display: grid;
-	grid-template-columns: get_em(120px, 26px) 1fr;
+	grid-template-columns: get_em(120px, 26px) 1fr auto;
 	column-gap: 10px;
 	align-items: center;
 	font-size: get_size_pc(26px);
@@ -62,4 +94,24 @@
 			border: 0;
 		}
 	}
+
+	&_value {
+		margin-left: 0.75em;
+		font-size: get_em(32px, 26px);
+		font-weight: 500;
+		color: #525151;
+
+		[data-available='false'] & {
+			color: #ee5959;
+		}
+	}
+}
+
+.shuffle {
+	width: max-content;
+	padding: 5px 10px 6px;
+	margin-top: 15px;
+	font-weight: 500;
+	background-color: #ccc;
+	border-radius: 5px;
 }

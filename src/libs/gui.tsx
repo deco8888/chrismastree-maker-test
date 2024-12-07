@@ -1,5 +1,5 @@
-import GUI from 'lil-gui' // または dat.guiを使用する場合は import { GUI } from 'dat.gui'
-import { useContext, useEffect, useRef, useState } from 'react'
+import GUI from 'lil-gui'
+import { useContext, useEffect, useRef } from 'react'
 import * as THREE from 'three'
 
 import { EditorContext } from '~/hooks/useEditor'
@@ -14,8 +14,6 @@ interface DebugGUIProps {
 const DebugGUI = (props: DebugGUIProps) => {
 	const { decorations, onUpdate } = props
 	const guiRef = useRef<GUI>()
-	const context = useContext(EditorContext)
-	const [decoPosition, setDecoPosition] = useState<DecoPositionItem>()
 
 	useEffect(() => {
 		// 既存のGUIを破棄
@@ -74,17 +72,6 @@ const DebugGUI = (props: DebugGUIProps) => {
 					if (deco.rotation) {
 						deco.rotation.z = THREE.MathUtils.degToRad(value)
 						onUpdate(deco)
-						// context?.setDisplayedDecorations(prev =>
-						// 	prev.map(item =>
-						// 		item.id === deco.id
-						// 			? {
-						// 					...item,
-						// 					position: deco.position,
-						// 					rotation: deco.rotation,
-						// 				}
-						// 			: item,
-						// 	),
-						// )
 					}
 				})
 
@@ -102,23 +89,6 @@ const DebugGUI = (props: DebugGUIProps) => {
 			}
 		}
 	}, [decorations])
-
-	useEffect(() => {
-		console.log(context?.displayedDecorations)
-		// if (!decoPosition) return
-		// console.log({ decoPosition })
-		// context?.setDisplayedDecorations(prev =>
-		// 	prev.map(item =>
-		// 		item.id === decoPosition.id
-		// 			? {
-		// 					...item,
-		// 					position: decoPosition.position,
-		// 					rotation: decoPosition.rotation,
-		// 				}
-		// 			: item,
-		// 	),
-		// )
-	}, [context?.displayedDecorations])
 
 	return null
 }

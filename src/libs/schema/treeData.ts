@@ -30,7 +30,7 @@ export const treeDataSchema = z.object( {
 				.optional(),
 			setting: z
 				.object( {
-					color: z.string().optional(),
+					color: z.array( z.string() ).optional(),
 					size: z.number().optional(),
 				} )
 				.optional(),

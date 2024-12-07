@@ -43,7 +43,6 @@ const useEditorPreviewScene = () => {
 			.map(([key, value]) => {
 				// 装飾品(キャンディ)の初期回転位置を取得
 				let rotation: THREE.Euler | undefined = undefined
-				let originalRotation: THREE.Euler | undefined = undefined
 
 				const candyRotation = value.userData.candyRotation
 				if (candyRotation) {
@@ -53,15 +52,12 @@ const useEditorPreviewScene = () => {
 						-candyRotation[1] * DEG_TO_RAD,
 						'ZYX',
 					)
-
-					originalRotation = new THREE.Euler(candyRotation[0], candyRotation[2], -candyRotation[1])
 				}
 
 				return {
 					slug: key,
 					position: new THREE.Vector3(value.position.x * 0.5, value.position.y * 0.5, value.position.z * 0.5),
 					rotation: rotation,
-					originalRotation: originalRotation,
 					isAvailable: true,
 				}
 			})
@@ -192,7 +188,7 @@ const ChristmasTreeModel = (props: ChristmasTreeModelProps) => {
 				</group>
 
 				{/* 木の幹 */}
-				<mesh {...meshOptions} geometry={nodes.Tree!.geometry} material={materials.tree} />
+				<mesh {...meshOptions} geometry={nodes.Tree.geometry} material={materials.tree} />
 			</>
 		),
 		[nodes, materials, context?.starColor, context?.treeColor],
@@ -245,7 +241,7 @@ const ChristmasTreeDecoration = (props: ChristmasTreeDecorationProps) => {
 						modelPath={targetDecoration.path ?? ''}
 						setting={targetDecoration.setting}
 						objType={targetDecoration.objType ?? ''}
-						model={modelList[targetDecoration.objType] ?? null}
+						model={modelList[targetDecoration.objType]?.clone() ?? null}
 					/>
 				)
 			})}
