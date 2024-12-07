@@ -73,25 +73,30 @@ export const DecorationController = () => {
 		setValue('decorationsByType', context?.decorationsByType)
 	}
 
-	const updateDecorationByType = (currentCount: number) => {
-		const currentDecoration = context?.decorationsByType?.filter(v => v.slug !== context.selectedDecoration?.slug)
-		const otherTotal = currentDecoration?.reduce((acc, cur) => acc + (cur.count ?? 0), 0) ?? 0
-
-		const count =
-			otherTotal && maxCount
-				? otherTotal + currentCount >= maxCount
-					? maxCount - otherTotal
-					: currentCount
-				: currentCount
-
-		context?.setDecorationByType(prev =>
-			prev.map(v => (v.slug === context.selectedDecoration?.slug ? { ...v, count: count } : v)),
-		)
-	}
-
 	/*-------------------------------
 		個数を変更
 	-------------------------------*/
+	const updateDecorationByType = (currentCount: number) => {
+		try {
+			const currentDecoration = context?.decorationsByType?.filter(v => v.slug !== context.selectedDecoration?.slug)
+			const otherTotal = currentDecoration?.reduce((acc, cur) => acc + (cur.count ?? 0), 0) ?? 0
+
+			const count =
+				otherTotal && maxCount
+					? otherTotal + currentCount >= maxCount
+						? maxCount - otherTotal
+						: currentCount
+					: currentCount
+
+			context?.setDecorationByType(prev =>
+				prev.map(v => (v.slug === context.selectedDecoration?.slug ? { ...v, count: count } : v)),
+			)
+		} catch (error) {
+			const errorMessage = error instanceof Error ? error.message : '更新に失敗しました'
+			toast.error(errorMessage)
+		}
+	}
+
 	const onCountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const currentCount = Number(e.target.value)
 
