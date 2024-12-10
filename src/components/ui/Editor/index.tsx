@@ -64,7 +64,7 @@ export const Editor = () => {
 		})()
 	}, [])
 
-	if (modelUrl == null || loading) return <Loading bg={true} />
+	if (modelUrl == null || loading) return <Loading bg={true} isFixed={true} />
 
 	return <EditorComponent />
 }

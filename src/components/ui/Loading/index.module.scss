@@ -15,4 +15,10 @@
 	&[data-bg='true'] {
 		background-color: rgba(#000, 0.3);
 	}
+
+	&[data-fixed='true'] {
+		width: 100%;
+		min-height: 100vh;
+		min-height: 100svh;
+	}
 }

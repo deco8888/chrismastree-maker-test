@@ -6,6 +6,9 @@ import QueryProvider from '~/components/functional/QueryProvider'
 
 import type { Metadata } from 'next'
 
+// import { Suspense } from 'react'
+// import { Loading } from '~/components/ui/Loading'
+
 import '~/styles/global.scss'
 import style from './layout.module.scss'
 

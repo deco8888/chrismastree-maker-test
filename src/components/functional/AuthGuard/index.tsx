@@ -31,7 +31,7 @@ export default function AuthGuard({ children }: AuthGuardProps) {
 	}, [user, loading, router])
 
 	if (loading) {
-		return <Loading bg={true} />
+		return <Loading bg={true} isFixed={true} />
 	}
 
 	if (!user) {
