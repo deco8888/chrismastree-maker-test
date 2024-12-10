@@ -10,6 +10,10 @@ import { DecoPositionItem } from '~/types/editor'
 
 import style from './index.module.scss'
 
+/**
+ * 装飾品の編集パネルコントローラー
+ * @returns
+ */
 export const DecorationController = () => {
 	const context = useContext(EditorContext)
 	const { setValue } = useFormContext()

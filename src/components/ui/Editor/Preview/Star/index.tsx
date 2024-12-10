@@ -13,6 +13,12 @@ const meshOptions = {
 	receiveShadow: true,
 }
 
+/**
+ * 星
+ * @param nodes
+ * @param color
+ * @returns
+ */
 export const Star = ({ nodes, color = '#FFCC00' }: StarProps) => {
 	const starMaterial = useMemo(() => {
 		return new THREE.MeshStandardMaterial({

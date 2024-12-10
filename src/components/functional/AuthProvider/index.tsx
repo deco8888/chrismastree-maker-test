@@ -31,6 +31,11 @@ type AuthProviderProps = {
 	children: React.ReactNode
 }
 
+/**
+ * ログイン認証
+ * @param children
+ * @returns
+ */
 export default function AuthProvider({ children }: AuthProviderProps) {
 	const [state, setState] = useState<Omit<AuthContextType, 'signIn' | 'signOut'>>(initialContext)
 

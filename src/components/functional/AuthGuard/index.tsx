@@ -11,6 +11,11 @@ type AuthGuardProps = {
 	children: React.ReactNode
 }
 
+/**
+ * 認証ガード
+ * @param children
+ * @returns
+ */
 export default function AuthGuard({ children }: AuthGuardProps) {
 	const { user, loading } = useContext(AuthContext)
 	const router = useRouter()

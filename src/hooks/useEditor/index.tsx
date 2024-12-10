@@ -22,9 +22,9 @@ export const useEditor = () => {
 	// 選択された装飾品情報
 	const [selectedDecoration, setSelectedDecoration] = useState<SelectedDecoration>()
 	const [decoPositionList, setDecoPositionList] = useState<DecoPositionItem[]>([])
-
+	// 装飾品の編集パネル用設定情報リスト
 	const [decoSettingList, setDecoSettingList] = useState<DisplayedDecoration[]>([])
-
+	// 読み込み済みモデルリスト
 	const [modelList, setModelList] = useState<{
 		[slug: string]: THREE.Mesh
 	}>({})
@@ -146,7 +146,7 @@ export const useEditor = () => {
 			const availablePositions = decoPositionList.filter(v => v.isAvailable)
 			if (availablePositions.length <= 0) return
 
-			const shufflePositions = availablePositions.slice(0, addCount)
+			const shufflePositions = arrayShuffle(availablePositions).slice(0, addCount)
 
 			const newCollections = shufflePositions.map((pos, i) => {
 				return {

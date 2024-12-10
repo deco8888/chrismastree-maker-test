@@ -15,6 +15,10 @@ import { Loading } from '../Loading'
 
 import style from './index.module.scss'
 
+/**
+ * 編集画面コンポーネント
+ * @returns
+ */
 const EditorComponent = () => {
 	const context = useEditor()
 
@@ -35,6 +39,10 @@ const EditorComponent = () => {
 	)
 }
 
+/**
+ * 編集画面
+ * @returns
+ */
 export const Editor = () => {
 	const { loading } = useContext(AuthContext)
 

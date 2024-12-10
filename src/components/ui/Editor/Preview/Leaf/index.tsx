@@ -13,6 +13,12 @@ const meshOptions = {
 	receiveShadow: true,
 }
 
+/**
+ * ツリーの葉
+ * @param nodes
+ * @param color
+ * @returns
+ */
 export const TreeLeaf = ({ nodes, color = '#9A9D9C' }: TreeLeafProps) => {
 	const leafMaterial = useMemo(() => {
 		return new THREE.MeshStandardMaterial({

@@ -19,6 +19,10 @@ import { DECORATIONS_BY_TYPE, TREE_COLORS } from '../data'
 
 import style from './index.module.scss'
 
+/**
+ *	EditorPanelのカスタムフック
+ * @returns
+ */
 const useEditorPanel = () => {
 	const context = useContext(EditorContext)
 	const { user } = useContext(AuthContext)
@@ -72,6 +76,10 @@ const useEditorPanel = () => {
 	}
 }
 
+/**
+ * 編集画面パネルコンポーネント
+ * @returns
+ */
 export const EditorPanel = () => {
 	const { context, methods, isSending, submitHandler } = useEditorPanel()
 
