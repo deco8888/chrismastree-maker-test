@@ -1,12 +1,14 @@
 'use client'
 
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Fragment, useContext, useRef, useState } from 'react'
+import { Fragment, useContext, useEffect, useRef, useState } from 'react'
 import { FormProvider, SubmitHandler, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 
 import { EditorContext } from '~/hooks/useEditor'
 import { useFirestoreService } from '~/hooks/useFirestoreService'
+import { GlobalContext } from '~/hooks/useGlobal'
+import { useModalEvent } from '~/hooks/useModalEvent'
 
 import { AuthContext } from '~/components/functional/AuthProvider'
 
@@ -26,12 +28,18 @@ import style from './index.module.scss'
 const useEditorPanel = () => {
 	const context = useContext(EditorContext)
 	const { user } = useContext(AuthContext)
+	const { saveCompleteContext } = useContext(GlobalContext)
+
 	const treeService = useFirestoreService(TreeService)
+
+	const { open } = useModalEvent('save-complete-modal')
 
 	// 送信中フラグ
 	const [isSending, setIsSending] = useState<boolean>(false)
 	const isSendingRef = useRef<boolean>(false)
 	isSendingRef.current = isSending
+
+	const [treeId, setTreeId] = useState<string | null>(null)
 
 	// フォームメソッド
 	const methods = useForm<TreeData>({
@@ -54,9 +62,8 @@ const useEditorPanel = () => {
 			const result = await treeService.saveTree(data, user.id)
 
 			if (result.success) {
-				toast.success('ツリーを保存しました')
-				// 必要に応じてリダイレクトなど
-				// router.push(`/trees/${result.treeId}`);
+				setTreeId(result.treeId)
+				toast.success('ツリーを作成しました')
 			} else {
 				toast.error(result.error || '保存に失敗しました')
 			}
@@ -67,6 +74,28 @@ const useEditorPanel = () => {
 			setIsSending(false)
 		}
 	}
+
+	useEffect(() => {
+		if (!treeId) return
+
+		const fetchTreeData = async () => {
+			try {
+				const data = await treeService.getTreeData(treeId)
+
+				if (data) {
+					saveCompleteContext.dispatchEvent(data)
+					open()
+				} else {
+					toast.error('保存データの取得に失敗しました')
+				}
+			} catch (error) {
+				const errorMessage = error instanceof Error ? error.message : '保存データの取得に失敗しました'
+				toast.error(errorMessage)
+			}
+		}
+
+		fetchTreeData()
+	}, [treeId])
 
 	return {
 		context,

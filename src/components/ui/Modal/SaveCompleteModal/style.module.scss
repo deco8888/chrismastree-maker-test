@@ -1,0 +1,156 @@
+@use '~/styles/common' as *;
+
+.container {
+	position: relative;
+	display: flex;
+	flex-flow: column;
+	width: 90vw;
+	max-width: calc(get_clamp(500px, 600px) * (740 / 850));
+	max-height: 90vh;
+	padding: get_percent(50px, 740px) get_percent(40px, 740px) get_percent(95px, 740px);
+	overflow: hidden;
+	background: #fff;
+	border: 1.5px solid #000;
+	border-radius: get_size_pc(20px);
+}
+
+.inner {
+	position: relative;
+	display: flex;
+	flex-flow: column;
+	width: 100%;
+	overflow-y: auto;
+
+	@include customScrollBar;
+}
+
+.nickname {
+	font-size: get_size_pc(32px);
+	font-weight: 500;
+	color: #000;
+	text-align: center;
+
+	@include min-md {
+		font-size: get_px_to_vw(32px, $sp-viewport);
+	}
+}
+
+.frame {
+	position: relative;
+	z-index: 1;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: get_percent(600px, 660px);
+	height: 0;
+	aspect-ratio: 600 / 337;
+	padding-top: get_percent(337px, 660px);
+	margin-inline: auto;
+	margin-top: get_percent(28px, 660px);
+	overflow: hidden;
+	border: 1.5px solid #000;
+	border-radius: get_size_pc(10px);
+
+	@include min-md {
+		border-radius: get_px_to_vw(10px, $sp-viewport);
+	}
+
+	&_image {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+
+		img {
+			@include full;
+
+			object-fit: cover;
+		}
+	}
+}
+
+.vote {
+	position: absolute;
+	bottom: get_percent(17px, 337px);
+	left: get_percent(25px, 600px);
+	display: flex;
+
+	&_heart {
+		display: flex;
+		width: get_size_pc(40px);
+
+		svg {
+			display: block;
+			width: 100%;
+		}
+	}
+
+	&_count {
+		margin-left: get_em(5px, 36px);
+		font-size: get_size_pc(36px);
+		font-weight: 400;
+		line-height: 1;
+		color: #000;
+		letter-spacing: get_em(1.44px, 36px);
+	}
+}
+
+.comment {
+	margin-top: get_em(43px, 26px);
+	font-size: get_size_pc(26px);
+	font-weight: 500;
+	color: #000;
+	text-align: center;
+
+	@include min-md {
+		font-size: get_px_to_vw(26px, $sp-viewport);
+	}
+}
+
+.close {
+	position: absolute;
+	right: get_size_pc(10px);
+	bottom: get_size_pc(10px);
+	width: get_percent(60px, 660px);
+	aspect-ratio: 1 / 1;
+	padding-top: get_percent(60px, 740px);
+	background-color: #fff;
+	border: 1.5px solid #000;
+	border-radius: 50%;
+	transition: 0.15s background-color;
+
+	@include min-md {
+		right: get_px_to_vw(10px, $sp-viewport);
+		bottom: get_px_to_vw(10px, $sp-viewport);
+	}
+
+	@include hover {
+		background-color: #000;
+
+		&::before,
+		&::after {
+			background-color: #fff;
+		}
+	}
+
+	&::before,
+	&::after {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		width: 2px;
+		height: 50%;
+		content: '';
+		background-color: #000;
+		transition: 0.15s background-color;
+	}
+
+	&::before {
+		transform: translate(-50%, -50%) rotate(45deg);
+	}
+
+	&::after {
+		transform: translate(-50%, -50%) rotate(-45deg);
+	}
+}

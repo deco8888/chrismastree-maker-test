@@ -1,6 +1,8 @@
-import { addDoc, collection } from 'firebase/firestore';
+import { addDoc, collection, getDocs, query, QuerySnapshot, where } from 'firebase/firestore';
 
 import { TreeData } from '~/libs/schema/treeData';
+
+import { ChristmasTreeData } from '~/types/firebase/chrestmasTree';
 
 import { BaseFirestorService } from './base';
 import { db } from '../config';
@@ -37,14 +39,15 @@ export class TreeService extends BaseFirestorService {
 			userId,
 			treeColor: data.treeColor,
 			starColor: data.starColor,
-			decorationsByType: data.decorationsByType.map( d => ( {
+			decorations: data.decorationsByType.map( d => ( {
 				slug: d.slug,
 				count: d.count,
 				setting: {
 					color: d.setting?.color ?? null,
 					size: Number( d.setting?.size?.toFixed( 2 ) ) ?? null,
 				},
-				list: d.list?.map( l => ( { id: l.id,
+				list: d.list?.map( l => ( {
+					id: l.id,
 					slug: d.slug,
 					position: {
 						x: Number( l.position.x.toFixed( 2 ) ),
@@ -96,13 +99,55 @@ export class TreeService extends BaseFirestorService {
 		} catch ( error ) {
 
 			console.error( 'Post error:', error );
-			// throw error instanceof Error ? error : new Error( '投稿に失敗しました' );
 
 			return {
 				treeId: '',
 				success: false,
-				error: error instanceof Error ? error.message : '保存に失敗しました'
+				error: error instanceof Error ? error.message : '保存に失敗しました',
 			};
+
+		}
+
+	}
+
+	/**
+	 * 特定のツリーデータ取得
+	 * @param treeId
+	 * @returns
+	 */
+	public async getSnapshot( treeId: string ): Promise<QuerySnapshot> {
+
+		const q = query( collection( db, this.POST_COLLECTION ), where( 'treeId', '==', treeId ) );
+		const snapshot = await getDocs( q );
+		return snapshot;
+
+	}
+
+	/**
+	 * ツリーデータ取得
+	 * @param treeId
+	 * @returns
+	 */
+	public async getTreeData( treeId: string ) {
+
+		try {
+
+			const snapshot = await this.getSnapshot( treeId );
+
+			if ( ! snapshot.empty ) {
+
+				const data = snapshot.docs.map( doc => doc.data() )[ 0 ] as ChristmasTreeData;
+
+				return data;
+
+			}
+
+			return null;
+
+		} catch ( error ) {
+
+			console.error( 'Get Tree Data Error:', error );
+			throw error instanceof Error ? error : new Error( 'ツリーデータの取得に失敗しました' );
 
 		}
 

@@ -12,6 +12,7 @@ import { MODEL_DATA } from './data'
 import { EditorPanel } from './Panel'
 import { EditorPreview } from './Preview'
 import { Loading } from '../Loading'
+import { SaveCompleteModal } from '../Modal/SaveCompleteModal'
 
 import style from './index.module.scss'
 
@@ -35,6 +36,7 @@ const EditorComponent = () => {
 					<EditorPanel />
 				</div>
 			</div>
+			<SaveCompleteModal />
 		</EditorContext.Provider>
 	)
 }

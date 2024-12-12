@@ -5,7 +5,6 @@ import { createPortal } from 'react-dom'
 
 import { useAriaHidden } from '~/hooks/useAriaHidden'
 import { useDisableScroll } from '~/hooks/useDisableScroll'
-import { useFocusTrap } from '~/hooks/useFocusTrap'
 import { GlobalContext } from '~/hooks/useGlobal'
 
 import style from './style.module.scss'
@@ -51,22 +50,22 @@ const Modal: React.FC<Props> = ({ id, options, children, theme }) => {
 	const modalCheck = useCallback(
 		(arg: [string]) => {
 			// arg[0]が現在のモーダルのidと異なり、かつモーダルが開いている場合
-			if (id !== arg[0] && isOpenRef.current === true) {
-				onClose() // モーダルを閉じる
-			}
+			// if (id !== arg[0] && isOpenRef.current === true) {
+			// 	onClose() // モーダルを閉じる
+			// }
 		},
 		[id, onClose],
 	)
 
 	useAriaHidden(ref, isOpen)
-	useFocusTrap({ ref, isOpen, onClose })
+	// useFocusTrap({ ref, isOpen, onClose })
 	useDisableScroll(wrapperRef, isOpen)
 
 	useEffect(() => {
 		if (eventEmitter) {
 			eventEmitter.addListener(`${id}.open`, onOpen)
 			eventEmitter.addListener(`${id}.close`, onClose)
-			eventEmitter.addListener(`modalCheck`, modalCheck)
+			// eventEmitter.addListener(`modalCheck`, modalCheck)
 		}
 		return () => {
 			if (eventEmitter) {
