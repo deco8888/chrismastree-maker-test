@@ -1,110 +1,153 @@
 @use '~/styles/common' as *;
 
+$modal-inner-width: 660px;
+
 .container {
 	position: relative;
 	display: flex;
 	flex-flow: column;
 	width: 90vw;
 	max-width: calc(get_clamp(500px, 600px) * (740 / 850));
-	max-height: 90vh;
-	padding: get_percent(50px, 740px) get_percent(40px, 740px) get_percent(95px, 740px);
+	max-height: min(700px, 90vh);
+	// padding: get_percent(50px, 740px) 0 get_percent(50px, 740px) get_percent(40px, 740px);
 	overflow: hidden;
 	background: #fff;
 	border: 1.5px solid #000;
 	border-radius: get_size_pc(20px);
 }
 
-.inner {
+.scroll {
 	position: relative;
 	display: flex;
 	flex-flow: column;
-	width: 100%;
 	overflow-y: auto;
 
 	@include customScrollBar;
 }
 
-.nickname {
-	font-size: get_size_pc(32px);
-	font-weight: 500;
-	color: #000;
-	text-align: center;
-
-	@include min-md {
-		font-size: get_px_to_vw(32px, $sp-viewport);
-	}
+.inner {
+	padding: get_percent(50px, 740px) get_percent(40px, 740px);
 }
 
-.frame {
-	position: relative;
-	z-index: 1;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	width: get_percent(600px, 660px);
-	height: 0;
-	aspect-ratio: 600 / 337;
-	padding-top: get_percent(337px, 660px);
-	margin-inline: auto;
-	margin-top: get_percent(28px, 660px);
-	overflow: hidden;
-	border: 1.5px solid #000;
-	border-radius: get_size_pc(10px);
+.title {
+	font-family: $font-anton;
+	font-size: get_size_pc(70px);
+	font-weight: 00;
+	line-height: 1.05;
+	color: #fff;
+	text-align: center;
+	letter-spacing: get_em(3px, 70px);
+	white-space: nowrap;
 
-	@include min-md {
-		border-radius: get_px_to_vw(10px, $sp-viewport);
-	}
-
-	&_image {
-		position: absolute;
-		top: 0;
-		left: 0;
-		width: 100%;
-		height: 100%;
-
-		img {
-			@include full;
-
-			object-fit: cover;
+	@for $i from 1 through length($title_colors) {
+		&:not([data-slug='black']):not([data-slug='upload']) span[data-char='#{$i}'] {
+			color: nth($title_colors, $i);
+			-webkit-text-stroke-color: nth($title_colors, $i);
 		}
 	}
+
+	@include min-md {
+		font-size: get_px_to_vw(70px, $sp-viewport);
+	}
+
+	&_char {
+		-webkit-text-stroke-color: #000;
+		-webkit-text-stroke-width: get_em(1.5px, 70px);
+	}
+
+	&_splitChar {
+		font-size: get_em(80px, 70px);
+		-webkit-text-stroke-width: get_em(2px, 90px);
+	}
 }
 
-.vote {
-	position: absolute;
-	bottom: get_percent(17px, 337px);
-	left: get_percent(25px, 600px);
-	display: flex;
+.previewImage {
+	margin-top: get_percent(40px, $modal-inner-width);
+	background-color: #1c2023;
+}
 
-	&_heart {
+.form {
+	margin-top: get_percent(50px, $modal-inner-width);
+
+	&_block {
+		position: relative;
 		display: flex;
-		width: get_size_pc(40px);
+		flex-flow: column;
+		justify-content: center;
 
-		svg {
-			display: block;
-			width: 100%;
+		&:not(:first-of-type) {
+			margin-top: get_percent(30px, $modal-inner-width);
 		}
 	}
 
-	&_count {
-		margin-left: get_em(5px, 36px);
-		font-size: get_size_pc(36px);
-		font-weight: 400;
-		line-height: 1;
+	&_label {
+		font-family: $font-notosans;
+		font-size: get_size_pc(28px);
+		font-weight: 500;
 		color: #000;
-		letter-spacing: get_em(1.44px, 36px);
+
+		@include min-md {
+			font-size: max(16px, get_px_to_vw(28px, $sp-viewport));
+		}
+	}
+
+	&_error {
+		display: inline-block;
+		margin-left: 0.5em;
+		font-size: get_em(20px, 28px);
+		font-weight: 500;
+		color: red;
+	}
+
+	&_input {
+		padding: get_em(7px, 25px) get_em(12px, 25px) get_em(9px, 25px);
+		margin-top: get_em(15px, 25px);
+		font-family: $font-notosans;
+		font-size: get_size_pc(28px);
+		font-weight: 500;
+		color: #000;
+		border: 1.5px solid #000;
+		border-radius: 5px;
+
+		@include min-md {
+			font-size: max(16px, get_px_to_vw(28px, $sp-viewport));
+		}
+	}
+
+	&_textarea {
+		padding: get_em(7px, 25px) get_em(12px, 25px) get_em(9px, 25px);
+		margin-top: get_em(15px, 25px);
+		font-family: $font-notosans;
+		font-size: get_size_pc(28px);
+		font-weight: 500;
+		color: #000;
+		resize: none;
+		border: 1.5px solid #000;
+		border-radius: 5px;
+
+		@include min-md {
+			font-size: max(16px, get_px_to_vw(28px, $sp-viewport));
+		}
+
+		@include customScrollBar;
 	}
 }
 
-.comment {
-	margin-top: get_em(43px, 26px);
-	font-size: get_size_pc(26px);
-	font-weight: 500;
-	color: #000;
-	text-align: center;
+.saveButton {
+	display: block;
+	width: max-content;
+	padding: get_em(15px, 30px) get_em(30px, 30px) get_em(17px, 30px);
+	margin-inline: auto;
+	margin-top: 20px;
+	font-family: $font-notosans;
+	font-size: get_size_pc(30px);
+	font-weight: 700;
+	color: #fff;
+	background-color: #79ccd3;
+	border-radius: 5px;
 
 	@include min-md {
-		font-size: get_px_to_vw(26px, $sp-viewport);
+		font-size: get_px_to_vw(30px, $sp-viewport);
 	}
 }
 

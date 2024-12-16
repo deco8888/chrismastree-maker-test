@@ -39,3 +39,10 @@ export const treeDataSchema = z.object( {
 } );
 
 export type TreeData = z.infer<typeof treeDataSchema>
+
+export const treeTextDataSchema = z.object( {
+	nickname: z.string().min( 1, '必須項目です' ).max( 20, '20文字以内で入力してください' ),
+	comment: z.string().max( 100, '100文字以内で入力してください' ).optional(),
+} );
+
+export type TreeTextData = z.infer<typeof treeTextDataSchema>

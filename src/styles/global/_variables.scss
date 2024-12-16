@@ -7,12 +7,17 @@ $ie: false;
 	フォント
 --------------------------- */
 $font-system: 'Hiragino Kaku Gothic ProN', 'メイリオ', sans-serif;
+$font-notosans: var(--font-notosans);
+$font-josefin: var(--font-josefin);
+$font-anton: var(--font-anton);
+$font-yujisyuku: var(--font-yujisyuku);
 
 /* ---------------------------
 	カラーパレット
 --------------------------- */
 // base
 $color-base: #01010d;
+$title_colors: #f10a20, #029861, #fb9101;
 
 /* ---------------------------
 	ページ固有

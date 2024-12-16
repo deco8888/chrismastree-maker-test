@@ -28,6 +28,10 @@ export const useEditor = () => {
 	const [modelList, setModelList] = useState<{
 		[slug: string]: THREE.Mesh
 	}>({})
+	// キャプチャ画像
+	const [capturedImage, setCapturedImage] = useState<string | null>(null)
+	// キャプチャリクエスト
+	const [captureRequested, setCaptureRequested] = useState<boolean>(false)
 
 	// 木の幹
 	const treeRef = useRef<THREE.Group>(null)
@@ -216,6 +220,14 @@ export const useEditor = () => {
 		[decorationsByType, selectedDecoration],
 	)
 
+	/*-------------------------------
+		完成モデルのキャプチャ完了
+	-------------------------------*/
+	const onCaptureComplete = (imageUrl: string) => {
+		setCapturedImage(imageUrl)
+		setCaptureRequested(false)
+	}
+
 	return {
 		starColor,
 		setStarColor,
@@ -237,5 +249,10 @@ export const useEditor = () => {
 		subtractDecoration,
 		modelList,
 		setModelList,
+		capturedImage,
+		setCapturedImage,
+		captureRequested,
+		setCaptureRequested,
+		onCaptureComplete,
 	}
 }

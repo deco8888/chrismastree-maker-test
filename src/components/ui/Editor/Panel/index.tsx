@@ -28,8 +28,9 @@ import style from './index.module.scss'
 const useEditorPanel = () => {
 	const context = useContext(EditorContext)
 	const { user } = useContext(AuthContext)
+	// 保存完了モーダルのコンテキスト
 	const { saveCompleteContext } = useContext(GlobalContext)
-
+	// Firestoreサービス
 	const treeService = useFirestoreService(TreeService)
 
 	const { open } = useModalEvent('save-complete-modal')
@@ -38,7 +39,11 @@ const useEditorPanel = () => {
 	const [isSending, setIsSending] = useState<boolean>(false)
 	const isSendingRef = useRef<boolean>(false)
 	isSendingRef.current = isSending
-
+	// キャプチャ保存フラグ
+	const isSavingCaptureRef = useRef<boolean>(false)
+	// ツリーの送信データ
+	const [treeData, setTreeData] = useState<TreeData | null>(null)
+	// ツリーID
 	const [treeId, setTreeId] = useState<string | null>(null)
 
 	// フォームメソッド
@@ -52,29 +57,94 @@ const useEditorPanel = () => {
 	})
 
 	/*-------------------------------
+		データ整形
+	-------------------------------*/
+	const formatData = (data: TreeData, captureUrl: string) => {
+		const formattedData = {
+			treeColor: data.treeColor,
+			starColor: data.starColor,
+			decorations: data.decorationsByType.map(d => ({
+				slug: d.slug,
+				count: d.count,
+				setting: {
+					color: d.setting?.color ?? null,
+					size: Number(d.setting?.size?.toFixed(2)) ?? null,
+				},
+				list: d.list?.map(l => ({
+					id: l.id,
+					slug: d.slug,
+					position: {
+						x: Number(l.position.x.toFixed(2)),
+						y: Number(l.position.y.toFixed(2)),
+						z: Number(l.position.z.toFixed(2)),
+					},
+					rotation: l.rotation
+						? {
+								x: Number(l.rotation.x.toFixed(2)),
+								y: Number(l.rotation.y.toFixed(2)),
+								z: Number(l.rotation.z.toFixed(2)),
+							}
+						: null,
+					objType: l.objType ?? null,
+				})),
+			})),
+			previewUrl: captureUrl,
+			createdAt: new Date(),
+			updatedAt: new Date(),
+		}
+
+		return formattedData
+	}
+
+	/*-------------------------------
 		ツリーデータ送信
 	-------------------------------*/
 	const submitHandler: SubmitHandler<TreeData> = async (data: TreeData) => {
-		if (isSendingRef.current || !user || !user.id) return
+		if (isSendingRef.current) return
 		setIsSending(true)
-
-		try {
-			const result = await treeService.saveTree(data, user.id)
-
-			if (result.success) {
-				setTreeId(result.treeId)
-				toast.success('ツリーを作成しました')
-			} else {
-				toast.error(result.error || '保存に失敗しました')
-			}
-			setIsSending(false)
-		} catch (error) {
-			const errorMessage = error instanceof Error ? error.message : '更新に失敗しました'
-			toast.error(errorMessage)
-			setIsSending(false)
-		}
+		setTreeData(data)
+		// キャプチャ画像を所望
+		context?.setCaptureRequested(true)
 	}
 
+	/*-------------------------------
+		ツリーデータ保存
+	-------------------------------*/
+	useEffect(() => {
+		if (isSavingCaptureRef.current) return
+
+		if (!treeData || !context?.capturedImage || context?.captureRequested || !user || !user.id) return
+		const userId = user.id
+		const captureUrl = context?.capturedImage
+
+		const saveTreeData = async () => {
+			isSavingCaptureRef.current = true
+
+			try {
+				const treeSaveData = formatData(treeData, captureUrl)
+				const result = await treeService.saveTree(treeSaveData, userId)
+
+				if (result.success) {
+					setTreeId(result.treeId)
+					toast.success('ツリーを作成しました')
+				} else {
+					toast.error(result.error || '保存に失敗しました')
+				}
+			} catch (error) {
+				const errorMessage = error instanceof Error ? error.message : '更新に失敗しました'
+				toast.error(errorMessage)
+			} finally {
+				setIsSending(false)
+				isSavingCaptureRef.current = false
+				context?.setCapturedImage(null) // キャプチャ保存データをリセット
+			}
+		}
+		saveTreeData()
+	}, [treeData, context?.capturedImage, context?.captureRequested])
+
+	/*-------------------------------
+		ツリーIDからデータ取得
+	-------------------------------*/
 	useEffect(() => {
 		if (!treeId) return
 

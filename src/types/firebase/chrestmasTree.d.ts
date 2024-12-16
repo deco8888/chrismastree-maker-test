@@ -1,8 +1,12 @@
 export interface ChristmasTreeData {
 	userId: string
+	treeId: string
 	treeColor: string
 	starColor: string
 	decorations: ChristmasTreeDecorations[]
+	previewUrl: string
+	nickname?: string
+	comment?: string
 	createdAt: Timestamp
 	updatedAt: Timestamp
 }
@@ -15,7 +19,7 @@ export interface ChristmasTreeDecorations {
 }
 
 export interface ChristmasTreeDecorationsSettings {
-	color: string | null
+	color: string[] | null
 	size: number | null
 }
 

@@ -1,6 +1,6 @@
-import { addDoc, collection, getDocs, query, QuerySnapshot, where } from 'firebase/firestore';
+import { addDoc, collection, getDocs, query, QuerySnapshot, updateDoc, where } from 'firebase/firestore';
 
-import { TreeData } from '~/libs/schema/treeData';
+import { TreeTextData } from '~/libs/schema/treeData';
 
 import { ChristmasTreeData } from '~/types/firebase/chrestmasTree';
 
@@ -32,41 +32,7 @@ export class TreeService extends BaseFirestorService {
 	 * @param userId ユーザーID
 	 * @returns
 	 */
-	public async saveTree( data: TreeData, userId: string ): Promise<any> {
-
-		// データの整形
-		const formattedData = {
-			userId,
-			treeColor: data.treeColor,
-			starColor: data.starColor,
-			decorations: data.decorationsByType.map( d => ( {
-				slug: d.slug,
-				count: d.count,
-				setting: {
-					color: d.setting?.color ?? null,
-					size: Number( d.setting?.size?.toFixed( 2 ) ) ?? null,
-				},
-				list: d.list?.map( l => ( {
-					id: l.id,
-					slug: d.slug,
-					position: {
-						x: Number( l.position.x.toFixed( 2 ) ),
-						y: Number( l.position.y.toFixed( 2 ) ),
-						z: Number( l.position.z.toFixed( 2 ) ),
-					},
-					rotation: l.rotation
-						? {
-							x: Number( l.rotation.x.toFixed( 2 ) ),
-							y: Number( l.rotation.y.toFixed( 2 ) ),
-							z: Number( l.rotation.z.toFixed( 2 ) ),
-						}
-						: null,
-					objType: l.objType ?? null,
-				} ) ),
-			} ) ),
-			createdAt: new Date(),
-			updatedAt: new Date(),
-		};
+	public async saveTree( data: Omit<ChristmasTreeData, 'userId' | 'treeId'>, userId: string ): Promise<any> {
 
 		try {
 
@@ -77,16 +43,18 @@ export class TreeService extends BaseFirestorService {
 
 				// コレクションが存在しない場合は新規作成
 				await addDoc( collection( db, this.POST_COLLECTION ), {
-					...formattedData,
+					...data,
 					treeId,
+					userId,
 				} );
 
 			} else {
 
 				// 既存のコレクションに追加
 				await addDoc( collection( db, this.POST_COLLECTION ), {
-					...formattedData,
+					...data,
 					treeId,
+					userId,
 				} );
 
 			}
@@ -148,6 +116,41 @@ export class TreeService extends BaseFirestorService {
 
 			console.error( 'Get Tree Data Error:', error );
 			throw error instanceof Error ? error : new Error( 'ツリーデータの取得に失敗しました' );
+
+		}
+
+	}
+
+	/**
+	 *	ツリーデータ更新
+	 * @param treeId
+	 * @param data
+	 */
+	public async updateTreeData( treeId: string, data: TreeTextData ) {
+
+		try {
+
+			const snapshot = await this.getSnapshot( treeId );
+
+			if ( ! snapshot.empty ) {
+
+				const qDoc = snapshot.docs.find( doc => doc.data().treeId === treeId );
+
+				if ( qDoc ) {
+
+					await updateDoc( qDoc.ref, {
+						...data,
+						updatedAt: new Date(),
+					} );
+
+				}
+
+			}
+
+		} catch ( error ) {
+
+			console.error( 'Update error:', error );
+			throw error instanceof Error ? error : new Error( 'ニックネーム・コメントに失敗しました' );
 
 		}
 

@@ -4,6 +4,8 @@ import AppGlobalProvider from '~/components/functional/AppGlobalProvider'
 import AuthProvider from '~/components/functional/AuthProvider'
 import QueryProvider from '~/components/functional/QueryProvider'
 
+import { anton, notoSansJP } from '~/components/fonts'
+
 import type { Metadata } from 'next'
 
 // import { Suspense } from 'react'
@@ -23,7 +25,7 @@ export default function RootLayout({
 	children: React.ReactNode
 }>) {
 	return (
-		<html lang="ja">
+		<html lang="ja" className={`${notoSansJP.variable} ${anton.variable}`}>
 			<body>
 				<QueryProvider>
 					<AppGlobalProvider>

@@ -1,7 +1,7 @@
 'use client'
 
 import { Environment, OrbitControls, PerspectiveCamera, useGLTF } from '@react-three/drei'
-import { Canvas } from '@react-three/fiber'
+import { Canvas, useThree } from '@react-three/fiber'
 import { Bloom, EffectComposer, ToneMapping } from '@react-three/postprocessing'
 import { CSSProperties, useCallback, useContext, useEffect, useMemo } from 'react'
 import * as THREE from 'three'
@@ -72,6 +72,28 @@ const useEditorPreviewScene = () => {
 	}
 }
 
+/**
+ * キャプチャハンドラー
+ * @returns
+ */
+const CaptureHandler = () => {
+	const context = useContext(EditorContext)
+	const { gl, scene, camera } = useThree()
+
+	/*-------------------------------
+		完成モデルのキャプチャ
+	-------------------------------*/
+	useEffect(() => {
+		if (context?.captureRequested) {
+			gl.render(scene, camera)
+			const imageUrl = gl.domElement.toDataURL('image/png')
+			context.onCaptureComplete(imageUrl)
+		}
+	}, [context?.captureRequested, gl, scene, camera])
+
+	return null
+}
+
 type ChristmasTreeModelSceneProps = {
 	data: ReturnType<typeof useEditorPreviewScene>
 	context: EditorContextType
@@ -80,7 +102,7 @@ type ChristmasTreeModelSceneProps = {
 
 /**
  * クリスマスツリーモデルシーン
- * @param children
+ * @param {ChristmasTreeModelSceneProps} props
  * @returns
  */
 const EditorPreviewScene = (props: ChristmasTreeModelSceneProps) => {
@@ -110,6 +132,9 @@ const EditorPreviewScene = (props: ChristmasTreeModelSceneProps) => {
 			}
 			gl={{ antialias: true, alpha: true }}
 		>
+			{/* キャプチャハンドラー */}
+			<CaptureHandler />
+
 			{/* ライト */}
 			<ambientLight intensity={1} />
 			<directionalLight intensity={1} position={nodes.FrontLight?.position} rotation={nodes.FrontLight?.rotation} />

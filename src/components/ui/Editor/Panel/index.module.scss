@@ -9,7 +9,7 @@
 .inner {
 	@include inner;
 
-	padding-block: 20px;
+	padding-block: 50px 100px;
 }
 
 .tree {
@@ -72,16 +72,16 @@
 .saveButton {
 	display: block;
 	width: max-content;
-	padding: 5px 10px 6px;
+	padding: get_em(15px, 30px) get_em(30px, 30px) get_em(17px, 30px);
 	margin-inline: auto;
 	margin-top: 20px;
-	font-size: get_size_pc(34px);
-	font-weight: 500;
+	font-size: get_size_pc(30px);
+	font-weight: 700;
 	color: #fff;
 	background-color: #79ccd3;
 	border-radius: 5px;
 
 	@include min-md {
-		font-size: get_px_to_vw(34px, $sp-viewport);
+		font-size: get_px_to_vw(30px, $sp-viewport);
 	}
 }
