@@ -3,7 +3,7 @@
 import { Environment, OrbitControls, PerspectiveCamera, useGLTF } from '@react-three/drei'
 import { Canvas, useThree } from '@react-three/fiber'
 import { Bloom, EffectComposer, ToneMapping } from '@react-three/postprocessing'
-import { CSSProperties, useCallback, useContext, useEffect, useMemo } from 'react'
+import { CSSProperties, useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import * as THREE from 'three'
 
 import { EditorContext, EditorContextType } from '~/hooks/useEditor'
@@ -72,11 +72,17 @@ const useEditorPreviewScene = () => {
 	}
 }
 
+type CaptureHandlerProps = {
+	camera: THREE.PerspectiveCamera
+	defaultCamera: THREE.PerspectiveCamera | null
+}
+
 /**
  * キャプチャハンドラー
  * @returns
  */
-const CaptureHandler = () => {
+const CaptureHandler = (props: CaptureHandlerProps) => {
+	const { defaultCamera } = props
 	const context = useContext(EditorContext)
 	const { gl, scene, camera } = useThree()
 
@@ -85,6 +91,9 @@ const CaptureHandler = () => {
 	-------------------------------*/
 	useEffect(() => {
 		if (context?.captureRequested) {
+			if (defaultCamera) {
+				camera.rotation.copy(defaultCamera.rotation)
+			}
 			gl.render(scene, camera)
 			const imageUrl = gl.domElement.toDataURL('image/png')
 			context.onCaptureComplete(imageUrl)
@@ -108,6 +117,13 @@ type ChristmasTreeModelSceneProps = {
 const EditorPreviewScene = (props: ChristmasTreeModelSceneProps) => {
 	const { nodes, camera, verticalFov, initDecoPositions } = props.data
 	const context = props.context
+	const [defaultCamera, setDefaultCamera] = useState<THREE.PerspectiveCamera | null>(null)
+
+	useEffect(() => {
+		if (camera && defaultCamera == null) {
+			setDefaultCamera(camera)
+		}
+	}, [camera])
 
 	/*-------------------------------
 		装飾品の位置情報を取得
@@ -133,7 +149,7 @@ const EditorPreviewScene = (props: ChristmasTreeModelSceneProps) => {
 			gl={{ antialias: true, alpha: true }}
 		>
 			{/* キャプチャハンドラー */}
-			<CaptureHandler />
+			<CaptureHandler camera={camera} defaultCamera={defaultCamera} />
 
 			{/* ライト */}
 			<ambientLight intensity={1} />
