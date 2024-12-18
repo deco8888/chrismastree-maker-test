@@ -1,10 +1,11 @@
 'use client'
 
 import { Environment, OrbitControls, PerspectiveCamera, useGLTF } from '@react-three/drei'
-import { Canvas, useThree } from '@react-three/fiber'
+import { Camera, Canvas, useThree } from '@react-three/fiber'
 import { Bloom, EffectComposer, ToneMapping } from '@react-three/postprocessing'
-import { CSSProperties, useCallback, useContext, useEffect, useMemo, useState } from 'react'
+import { CSSProperties, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import * as THREE from 'three'
+import { OrbitControls as OrbitControlsImpl } from 'three-stdlib'
 
 import { EditorContext, EditorContextType } from '~/hooks/useEditor'
 
@@ -72,27 +73,33 @@ const useEditorPreviewScene = () => {
 	}
 }
 
-type CaptureHandlerProps = {
-	camera: THREE.PerspectiveCamera
-	defaultCamera: THREE.PerspectiveCamera | null
-}
-
 /**
  * キャプチャハンドラー
  * @returns
  */
-const CaptureHandler = (props: CaptureHandlerProps) => {
-	const { defaultCamera } = props
+const CaptureHandler = ({ target }: { target: THREE.Vector3 | null }) => {
 	const context = useContext(EditorContext)
 	const { gl, scene, camera } = useThree()
+	const [defaultCamera, setDefaultCamera] = useState<Camera | null>(null)
+
+	useEffect(() => {
+		if (!camera || defaultCamera !== null) return
+		const dc = camera.clone()
+		console.log(camera)
+		dc.copy(camera)
+		setDefaultCamera(dc)
+	}, [camera])
 
 	/*-------------------------------
 		完成モデルのキャプチャ
 	-------------------------------*/
 	useEffect(() => {
 		if (context?.captureRequested) {
-			if (defaultCamera) {
+			if (defaultCamera && target) {
+				console.log(target)
+				camera.lookAt(target)
 				camera.rotation.copy(defaultCamera.rotation)
+				camera.position.copy(defaultCamera.position)
 			}
 			gl.render(scene, camera)
 			const imageUrl = gl.domElement.toDataURL('image/png')
@@ -117,13 +124,14 @@ type ChristmasTreeModelSceneProps = {
 const EditorPreviewScene = (props: ChristmasTreeModelSceneProps) => {
 	const { nodes, camera, verticalFov, initDecoPositions } = props.data
 	const context = props.context
-	const [defaultCamera, setDefaultCamera] = useState<THREE.PerspectiveCamera | null>(null)
+
+	const controlsRef = useRef<OrbitControlsImpl>(null)
+	const [target, setTarget] = useState<THREE.Vector3 | null>(null)
 
 	useEffect(() => {
-		if (camera && defaultCamera == null) {
-			setDefaultCamera(camera)
-		}
-	}, [camera])
+		// if (controlsRef.current == null || target !== null) return
+		console.log(controlsRef.current)
+	}, [controlsRef])
 
 	/*-------------------------------
 		装飾品の位置情報を取得
@@ -149,7 +157,7 @@ const EditorPreviewScene = (props: ChristmasTreeModelSceneProps) => {
 			gl={{ antialias: true, alpha: true }}
 		>
 			{/* キャプチャハンドラー */}
-			<CaptureHandler camera={camera} defaultCamera={defaultCamera} />
+			<CaptureHandler target={target} />
 
 			{/* ライト */}
 			<ambientLight intensity={1} />
@@ -176,6 +184,7 @@ const EditorPreviewScene = (props: ChristmasTreeModelSceneProps) => {
 
 			{/* カメラコントロール */}
 			<OrbitControls
+				ref={controlsRef}
 				enablePan={false}
 				enableZoom={false}
 				// 回転のみ許可
