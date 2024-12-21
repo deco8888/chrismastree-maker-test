@@ -85,7 +85,6 @@ const CaptureHandler = ({ target }: { target: THREE.Vector3 | null }) => {
 	useEffect(() => {
 		if (!camera || defaultCamera !== null) return
 		const dc = camera.clone()
-		console.log(camera)
 		dc.copy(camera)
 		setDefaultCamera(dc)
 	}, [camera])
@@ -95,9 +94,7 @@ const CaptureHandler = ({ target }: { target: THREE.Vector3 | null }) => {
 	-------------------------------*/
 	useEffect(() => {
 		if (context?.captureRequested) {
-			if (defaultCamera && target) {
-				console.log(target)
-				camera.lookAt(target)
+			if (defaultCamera) {
 				camera.rotation.copy(defaultCamera.rotation)
 				camera.position.copy(defaultCamera.position)
 			}

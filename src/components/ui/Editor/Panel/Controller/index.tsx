@@ -19,7 +19,7 @@ export const DecorationController = () => {
 	const { setValue } = useFormContext()
 
 	// カラー
-	const [color, setColor] = useState(
+	const [colors, setColors] = useState(
 		context?.decorationsByType?.find(v => v.slug === context.selectedDecoration?.slug)?.setting?.color ?? [],
 	)
 	// サイズ
@@ -43,7 +43,7 @@ export const DecorationController = () => {
 							...v,
 							setting: {
 								...v.setting,
-								color: color,
+								color: colors,
 							},
 						}
 					: v,
@@ -52,12 +52,26 @@ export const DecorationController = () => {
 
 		// フォーム更新
 		setValue('decorationsByType', context?.decorationsByType)
-	}, [color])
+	}, [colors])
+
+	const onChangeColor = (e: React.ChangeEvent<HTMLInputElement>) => {
+		setColors(prev => {
+			if (prev.includes('#9A9D9C')) {
+				return prev.filter(v => v !== '#9A9D9C')
+			}
+
+			if (prev.includes(e.target.value)) {
+				return prev.filter(v => v !== e.target.value)
+			} else {
+				return [...prev, e.target.value]
+			}
+		})
+	}
 
 	/*-------------------------------
 		サイズを変更
 	-------------------------------*/
-	const onCountSize = (e: React.ChangeEvent<HTMLInputElement>) => {
+	const onChangeSize = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setSize(Number(e.target.value))
 		context?.setDecorationByType(prev =>
 			prev.map(v =>
@@ -101,7 +115,7 @@ export const DecorationController = () => {
 		}
 	}
 
-	const onCountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+	const onChangeCount = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const currentCount = Number(e.target.value)
 
 		// タイプ別の装飾品情報を取得
@@ -178,25 +192,14 @@ export const DecorationController = () => {
 								id={`color-${i}`}
 								name="color"
 								className={style.colorPicker_input}
-								onClick={() => {
-									setColor(prev => {
-										if (prev.includes('#9A9D9C')) {
-											return prev.filter(v => v !== '#9A9D9C')
-										}
-
-										if (prev.includes(color)) {
-											return prev.filter(v => v !== color)
-										} else {
-											return [...prev, color]
-										}
-									})
-								}}
-								disabled={!color.includes(color)}
+								onChange={onChangeColor}
+								value={color}
+								checked={colors.includes(color)}
 							/>
 							<label
 								className={style.colorPicker_label}
 								htmlFor={`color-${i}`}
-								data-active={!color.includes(color)}
+								data-active={!colors.includes(color)}
 								style={{ backgroundColor: color }}
 							></label>
 						</li>
@@ -219,7 +222,7 @@ export const DecorationController = () => {
 						step="0.1"
 						type="range"
 						value={size ?? 1}
-						onChange={onCountSize}
+						onChange={onChangeSize}
 					/>
 					<p className={`${style.item_value} ${notoSansJP.className}`}>{size}</p>
 				</div>
@@ -238,7 +241,7 @@ export const DecorationController = () => {
 						step="1"
 						type="range"
 						value={count ?? 0}
-						onChange={onCountChange}
+						onChange={onChangeCount}
 					/>
 					<p className={`${style.item_value} ${notoSansJP.className}`}>{count}</p>
 				</div>
