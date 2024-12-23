@@ -1,0 +1,48 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    // 認証チェック
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // 画像ファイルチェック
+    function isImageFile() {
+      return request.resource.contentType.matches('image/.*');
+    }
+
+    // ファイルサイズチェック（最大5MB）
+    function isValidSize() {
+      return request.resource.size <= 5 * 1024 * 1024;
+    }
+
+    // プレビュー画像パス
+    match /preview/{userId}/{fileName} {
+      // 読み取り：誰でも可能
+      allow read: if true;
+
+      // アップロード：認証済みユーザーのみ、画像ファイルのみ
+      allow create: if isAuthenticated() &&
+        request.auth.uid == userId;
+
+      // 更新と削除：ファイルの所有者のみ
+      allow update, delete: if isAuthenticated() &&
+        request.auth.uid == userId;
+    }
+
+     // ツリーデータパス
+    match /tree/{userId}/{fileName} {
+      // 読み取り：誰でも可能
+      allow read: if true;
+
+      // アップロード：認証済みユーザーのみ、画像ファイルのみ
+      allow create: if isAuthenticated() &&
+        request.auth.uid == userId;
+
+      // 更新と削除：ファイルの所有者のみ
+      allow update, delete: if isAuthenticated() &&
+        request.auth.uid == userId;
+    }
+  }
+}

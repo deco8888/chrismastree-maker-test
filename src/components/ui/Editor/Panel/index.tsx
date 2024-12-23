@@ -14,7 +14,7 @@ import { AuthContext } from '~/components/functional/AuthProvider'
 
 import { convertDataUrlToFile } from '~/libs/convert'
 import { TreeService } from '~/libs/firebase/service/tree'
-import { uploadImage } from '~/libs/firebase/storage'
+import { uploadData } from '~/libs/firebase/storage'
 import { TreeData, treeDataSchema } from '~/libs/schema/treeData'
 
 import { notoSansJP } from '~/components/fonts'
@@ -61,7 +61,7 @@ const useEditorPanel = () => {
 	/*-------------------------------
 		データ整形
 	-------------------------------*/
-	const formatData = (data: TreeData, captureUrl: string) => {
+	const formatData = (data: TreeData, previewImageUrl: string, treeUrl: string) => {
 		const formattedData = {
 			treeColor: data.treeColor,
 			starColor: data.starColor,
@@ -90,7 +90,8 @@ const useEditorPanel = () => {
 					objType: l.objType ?? null,
 				})),
 			})),
-			previewUrl: captureUrl,
+			previewImageUrl: previewImageUrl,
+			treeUrl: treeUrl,
 			createdAt: new Date(),
 			updatedAt: new Date(),
 		}
@@ -109,18 +110,50 @@ const useEditorPanel = () => {
 		context?.setCaptureRequested(true)
 	}
 
-	const uploadStorage = async (dataURL: string, userId: string) => {
+	/*-------------------------------
+		プレビュー画像をアップロード
+	-------------------------------*/
+	const uploadPreviewImage = async (dataURL: string, userId: string) => {
 		try {
-			const file = await convertDataUrlToFile(dataURL, `capture_${new Date()}.png`, 'image/png')
+			const file = await convertDataUrlToFile(dataURL, `preview_${Date.now()}.png`, 'image/png')
 
 			if (file) {
-				const imageUrl = uploadImage(file, userId)
+				const path = `preview/${userId}/${file.name}`
+				const imageUrl = await uploadData(path, file)
 				return imageUrl
 			}
 			return null
 		} catch (error) {
-			console.error('Capture processing error', error)
-			throw new Error('キャプチャの処理に失敗しました')
+			console.error('Preview image upload error', error)
+			throw new Error('プレビュー画像のアップロードに失敗しました')
+		}
+	}
+
+	const uploadTreeData = async (data: TreeData, userId: string) => {
+		const htmlContent = `<!DOCTYPE html>
+			<html lang="ja">
+			<head>
+			<meta charset="utf-8">
+			<meta name="viewport" content="width=device-width, initial-scale=1.0">
+			<title>TREE</title>
+			<script>
+				window.TREE_DATA = ${JSON.stringify(data)}
+			</script>
+			</head>
+			<body>
+			<canvas id="canvas"></canvas>
+			</body>
+			</html>`
+
+		try {
+			const path = `tree/${userId}/tree_${Date.now()}.html`
+			const htmlBlob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' })
+			const htmlUrl = await uploadData(path, htmlBlob)
+			console.log(htmlUrl)
+			return htmlUrl
+		} catch (error) {
+			console.error('Tree data upload error', error)
+			throw new Error('ツリーデータのアップロードに失敗しました')
 		}
 	}
 
@@ -138,13 +171,17 @@ const useEditorPanel = () => {
 			isSavingCaptureRef.current = true
 
 			try {
-				const imageUrl = await uploadStorage(captureUrl, userId)
-				if (!imageUrl) {
-					toast.error('キャプチャに失敗しました')
-					return
+				const previewImageUrl = await uploadPreviewImage(captureUrl, userId)
+				if (!previewImageUrl) {
+					throw new Error('プレビュー画像のアップロードに失敗しました')
 				}
 
-				const treeSaveData = formatData(treeData, imageUrl)
+				const treeUrl = await uploadTreeData(treeData, userId)
+				if (!treeUrl) {
+					throw new Error('ツリーデータのアップロードに失敗しました')
+				}
+
+				const treeSaveData = formatData(treeData, previewImageUrl, treeUrl)
 				const result = await treeService.saveTree(treeSaveData, userId)
 
 				if (result.success) {
@@ -160,6 +197,7 @@ const useEditorPanel = () => {
 				setIsSending(false)
 				isSavingCaptureRef.current = false
 				context?.setCapturedImage(null) // キャプチャ保存データをリセット
+				context?.setCaptureRequested(false) // キャプチャリクエストをリセット
 			}
 		}
 		saveTreeData()

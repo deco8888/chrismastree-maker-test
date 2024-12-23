@@ -1,4 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useRouter } from 'next/navigation'
 import { useContext, useEffect, useRef, useState } from 'react'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
@@ -16,6 +17,7 @@ import style from './style.module.scss'
 const modalId = 'save-complete-modal'
 
 export const SaveCompleteModal = () => {
+	const router = useRouter()
 	const { saveCompleteContext } = useContext(GlobalContext)
 	const data = saveCompleteContext.state
 	// Firestoreサービス
@@ -47,7 +49,13 @@ export const SaveCompleteModal = () => {
 
 		try {
 			await treeService.updateTreeData(data.treeId, treeTextData)
-			toast.success('クリスマスツリーを登録しました！')
+			toast.success('クリスマスツリーを登録しました！', {
+				duration: 2000,
+				onDismiss: () => {
+					close()
+					router.push('/trees')
+				},
+			})
 		} catch (error) {
 			const errorMessage = error instanceof Error ? error.message : '登録に失敗しました'
 			toast.error(errorMessage)
@@ -102,7 +110,7 @@ export const SaveCompleteModal = () => {
 								</div>
 
 								<figure className={style.previewImage}>
-									{data.previewUrl && <img src={data.previewUrl} alt="preview" />}
+									{data.previewImageUrl && <img src={data.previewImageUrl} alt="preview" />}
 								</figure>
 
 								<button type="submit" className={style.saveButton}>

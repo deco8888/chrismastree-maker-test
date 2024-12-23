@@ -4,7 +4,8 @@ export interface ChristmasTreeData {
 	treeColor: string
 	starColor: string
 	decorations: ChristmasTreeDecorations[]
-	previewUrl: string
+	previewImageUrl: string
+	treeUrl: string
 	nickname?: string
 	comment?: string
 	createdAt: Timestamp

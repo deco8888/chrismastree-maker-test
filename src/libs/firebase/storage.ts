@@ -1,4 +1,4 @@
-import { getDownloadURL, ref, uploadBytes, UploadMetadata } from 'firebase/storage';
+import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 
 import { storage } from './config';
 
@@ -7,26 +7,21 @@ import { storage } from './config';
  * @param file
  * @returns CloudStorageからのダウンロードURL
  */
-export const uploadImage = async ( file: File, userId: string ) => {
+export const uploadData = async ( path: string, data: Blob | Uint8Array | ArrayBuffer ) => {
 
 	try {
 
-		const storageRef = ref( storage, `images/${userId}/${file.name}` );
-
-		// メタデータの設定
-		const metadata: UploadMetadata = {
-			contentType: file.type,
-		};
+		const storageRef = ref( storage, path );
 
 		// JSの[File API]or[Blob API]経由でファイルを取得
-		const uploadResult = await uploadBytes( storageRef, file, metadata );
+		const uploadResult = await uploadBytes( storageRef, data );
 
 		return await getDownloadURL( uploadResult.ref );
 
 	} catch ( error ) {
 
 		console.error( 'Image upload error', error );
-		throw new Error( '画像のアップロードに失敗しましたs' );
+		throw new Error( 'アップロードに失敗しました' );
 
 	}
 
