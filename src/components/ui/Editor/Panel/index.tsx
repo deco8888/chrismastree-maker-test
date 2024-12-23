@@ -12,7 +12,9 @@ import { useModalEvent } from '~/hooks/useModalEvent'
 
 import { AuthContext } from '~/components/functional/AuthProvider'
 
+import { convertDataUrlToFile } from '~/libs/convert'
 import { TreeService } from '~/libs/firebase/service/tree'
+import { uploadImage } from '~/libs/firebase/storage'
 import { TreeData, treeDataSchema } from '~/libs/schema/treeData'
 
 import { notoSansJP } from '~/components/fonts'
@@ -107,6 +109,21 @@ const useEditorPanel = () => {
 		context?.setCaptureRequested(true)
 	}
 
+	const uploadStorage = async (dataURL: string, userId: string) => {
+		try {
+			const file = await convertDataUrlToFile(dataURL, `capture_${new Date()}.png`, 'image/png')
+
+			if (file) {
+				const imageUrl = uploadImage(file, userId)
+				return imageUrl
+			}
+			return null
+		} catch (error) {
+			console.error('Capture processing error', error)
+			throw new Error('キャプチャの処理に失敗しました')
+		}
+	}
+
 	/*-------------------------------
 		ツリーデータ保存
 	-------------------------------*/
@@ -121,7 +138,13 @@ const useEditorPanel = () => {
 			isSavingCaptureRef.current = true
 
 			try {
-				const treeSaveData = formatData(treeData, captureUrl)
+				const imageUrl = await uploadStorage(captureUrl, userId)
+				if (!imageUrl) {
+					toast.error('キャプチャに失敗しました')
+					return
+				}
+
+				const treeSaveData = formatData(treeData, imageUrl)
 				const result = await treeService.saveTree(treeSaveData, userId)
 
 				if (result.success) {

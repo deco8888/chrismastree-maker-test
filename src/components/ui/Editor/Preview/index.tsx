@@ -9,6 +9,8 @@ import { OrbitControls as OrbitControlsImpl } from 'three-stdlib'
 
 import { EditorContext, EditorContextType } from '~/hooks/useEditor'
 
+import { AuthContext } from '~/components/functional/AuthProvider'
+
 import { ChristmasTreeGLTF } from '~/types/christmasTree'
 import { DecorationsByType, DisplayedDecoration } from '~/types/editor'
 
@@ -79,8 +81,10 @@ const useEditorPreviewScene = () => {
  */
 const CaptureHandler = ({ target }: { target: THREE.Vector3 | null }) => {
 	const context = useContext(EditorContext)
+	const { user } = useContext(AuthContext)
 	const { gl, scene, camera } = useThree()
 	const [defaultCamera, setDefaultCamera] = useState<Camera | null>(null)
+	const [fileData, setFileData] = useState<File | null>(null)
 
 	useEffect(() => {
 		if (!camera || defaultCamera !== null) return
@@ -101,8 +105,40 @@ const CaptureHandler = ({ target }: { target: THREE.Vector3 | null }) => {
 			gl.render(scene, camera)
 			const imageUrl = gl.domElement.toDataURL('image/png')
 			context.onCaptureComplete(imageUrl)
+
+			// try {
+			// 	const file = await convertDataUrlToFile(imageUrl, 'capture.png', 'image/png')
+			// } catch (error) {
+			// 	console.error('Capture processing error', error)
+			// 	throw new Error('キャプチャの処理に失敗しました')
+			// }
+
+			// convertDataUrlToFile(imageUrl, 'capture.png', 'image/png')
+			// 	.then(file => {
+			// 		setFileData(file)
+			// 	})
+			// 	.catch(error => {
+			// 		console.error('Capture processing error', error)
+			// 		throw new Error('キャプチャの処理に失敗しました')
+			// 	})
 		}
 	}, [context?.captureRequested, gl, scene, camera])
+
+	// useEffect(() => {
+	// 	const uploadCapture = async () => {
+	// 		if (fileData && user && user.id) {
+	// 			try {
+	// 				const imageUrl = await uploadImage(fileData, user.id)
+	// 				context?.onCaptureComplete(imageUrl)
+	// 			} catch (error) {
+	// 				console.error('Capture upload error', error)
+	// 				throw new Error('キャプチャのアップロードに失敗しました')
+	// 			}
+	// 		}
+	// 	}
+
+	// 	uploadCapture()
+	// }, [fileData, user])
 
 	return null
 }

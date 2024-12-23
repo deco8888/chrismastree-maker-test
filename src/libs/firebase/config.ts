@@ -1,6 +1,7 @@
 import { initializeApp, getApps, FirebaseApp } from 'firebase/app';
 import { getAuth, GoogleAuthProvider } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
+import { getStorage } from 'firebase/storage';
 
 const firebaseConfig: {
 	[key: string]: string | undefined
@@ -24,6 +25,9 @@ export const db = getFirestore( firebaseApp );
 
 // Initialize Auth Providers
 export const provider = new GoogleAuthProvider();
+
+// Initialize Storage
+export const storage = getStorage( firebaseApp );
 
 // Enable emulators in development
 // if ( process.env.NODE_ENV === 'development' ) {
