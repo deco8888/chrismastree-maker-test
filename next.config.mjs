@@ -3,9 +3,9 @@
 const nextConfig = {
 	reactStrictMode: true,
 	optimizeFonts: true,
-	output: 'standalone', // 静的エクスポートを有効化
+	output: 'export', // 静的エクスポートを有効化
 	images: {
-		domains: ['firebasestorage.googleapis.com']
+		unoptimized: true, // 画像の最適化を無効化
 	},
 	transpilePackages: ['three'],
 	webpack: (config) => {

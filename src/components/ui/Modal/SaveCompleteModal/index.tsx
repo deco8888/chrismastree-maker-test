@@ -50,9 +50,12 @@ export const SaveCompleteModal = () => {
 		try {
 			await treeService.updateTreeData(data.treeId, treeTextData)
 			toast.success('クリスマスツリーを登録しました！', {
-				duration: 2000,
+				duration: 1500,
 				onDismiss: () => {
 					close()
+					router.push('/trees')
+				},
+				onAutoClose: () => {
 					router.push('/trees')
 				},
 			})

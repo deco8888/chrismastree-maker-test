@@ -23,6 +23,8 @@ import { DECORATIONS_BY_TYPE, TREE_COLORS } from '../data'
 
 import style from './index.module.scss'
 
+const HOSTING_URL = process.env.NEXT_PUBLIC_HOSTING_URL
+
 /**
  *	EditorPanelのカスタムフック
  * @returns
@@ -129,21 +131,42 @@ const useEditorPanel = () => {
 		}
 	}
 
+	/*-------------------------------
+		HTMLテンプレート取得
+	-------------------------------*/
+	const getHtmlTemplate = async () => {
+		try {
+			const response = await fetch(`${HOSTING_URL}/viewer/template.html`)
+			return await response.text()
+		} catch (error) {
+			console.error('Template load error', error)
+			throw error
+		}
+	}
+
+	/*-------------------------------
+		HTMLコンテンツ生成
+	-------------------------------*/
+	const generateHtmlContent = async (data: TreeData) => {
+		try {
+			let template = await getHtmlTemplate()
+
+			template = template
+				.replace('VIEWER_URL', `${HOSTING_URL}/viewer/viewer.js`)
+				.replace('VIEWER_CSS_URL', `${HOSTING_URL}/viewer/viewer.css`)
+				.replace('TREE_DATA_PLACEHOLDER', JSON.stringify(data))
+			return template
+		} catch (error) {
+			console.error('HTML content generate error', error)
+			throw error
+		}
+	}
+
+	/*-------------------------------
+		ツリーデータアップロード
+	-------------------------------*/
 	const uploadTreeData = async (data: TreeData, userId: string) => {
-		const htmlContent = `<!DOCTYPE html>
-			<html lang="ja">
-			<head>
-			<meta charset="utf-8">
-			<meta name="viewport" content="width=device-width, initial-scale=1.0">
-			<title>TREE</title>
-			<script>
-				window.TREE_DATA = ${JSON.stringify(data)}
-			</script>
-			</head>
-			<body>
-			<canvas id="canvas"></canvas>
-			</body>
-			</html>`
+		const htmlContent = await generateHtmlContent(data)
 
 		try {
 			const path = `tree/${userId}/tree_${Date.now()}.html`

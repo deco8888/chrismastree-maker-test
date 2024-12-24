@@ -1,0 +1,19 @@
+{
+	"compilerOptions": {
+		"target": "es5",
+		"lib": ["dom", "dom.iterable", "esnext"],
+		"module": "esnext",
+		"strict": true,
+		"esModuleInterop": true, // import文でdefault exportを使えるようにする
+		"skipLibCheck": true,
+		"moduleResolution": "node",
+		"forceConsistentCasingInFileNames": true, // import時にファイルパスの文字列で大文字小文字を区別するかどうかを指定
+		"resolveJsonModule": true,
+		"isolatedModules": true, // コンパイル対象のファイル間の関係性を一切無視して、全てのファイルを単一のモジュールとしてコンパイルする
+		"outDir": "./dist",
+		"noEmit": true, // JSファイルの出力を許可
+		"allowJs": true // JSファイルのインポートを許可
+	},
+	"include": ["viewer.ts"],
+	"exclude": ["node_modules"]
+}
