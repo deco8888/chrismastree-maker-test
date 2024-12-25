@@ -118,5 +118,9 @@
 				"no-unused-vars": "off"
 			}
 		}
+	],
+	"ignorePatterns": [
+		"public/viewer/**",
+		"scripts/**"
 	]
 }

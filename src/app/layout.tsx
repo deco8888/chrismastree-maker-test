@@ -1,3 +1,4 @@
+import { Suspense } from 'react'
 import { Toaster } from 'sonner'
 
 import AppGlobalProvider from '~/components/functional/AppGlobalProvider'
@@ -28,17 +29,19 @@ export default function RootLayout({
 		<html lang="ja" className={`${notoSansJP.variable} ${anton.variable}`}>
 			<body>
 				<QueryProvider>
-					<AppGlobalProvider>
-						<AuthProvider>
-							<div className={style.container}>
-								<div className={style.bg}></div>
-								<div className={style.inner}>
-									<div className={style.contents}>{children}</div>
+					<Suspense>
+						<AppGlobalProvider>
+							<AuthProvider>
+								<div className={style.container}>
+									<div className={style.bg}></div>
+									<div className={style.inner}>
+										<div className={style.contents}>{children}</div>
+									</div>
 								</div>
-							</div>
-							<Toaster position="bottom-center" richColors={true} duration={3000} expand={false} closeButton={true} />
-						</AuthProvider>
-					</AppGlobalProvider>
+								<Toaster position="bottom-center" richColors={true} duration={3000} expand={false} closeButton={true} />
+							</AuthProvider>
+						</AppGlobalProvider>
+					</Suspense>
 				</QueryProvider>
 			</body>
 		</html>

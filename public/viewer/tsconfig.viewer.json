@@ -11,9 +11,9 @@
 		"resolveJsonModule": true,
 		"isolatedModules": true, // コンパイル対象のファイル間の関係性を一切無視して、全てのファイルを単一のモジュールとしてコンパイルする
 		"outDir": "./dist",
-		"noEmit": true, // JSファイルの出力を許可
+		"noEmit": false, // JSファイルの出力を許可
 		"allowJs": true // JSファイルのインポートを許可
 	},
-	"include": ["viewer.ts"],
+	"include": ["*.ts"],
 	"exclude": ["node_modules"]
 }
