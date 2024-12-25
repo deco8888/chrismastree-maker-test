@@ -135,8 +135,11 @@ const useEditorPanel = () => {
 		HTMLテンプレート取得
 	-------------------------------*/
 	const getHtmlTemplate = async () => {
+		const templatePath =
+			process.env.NODE_ENV === 'development' ? '/viewer/template.html' : `${HOSTING_URL}/viewer/template.html`
+
 		try {
-			const response = await fetch(`${HOSTING_URL}/viewer/template.html`)
+			const response = await fetch(templatePath)
 			return await response.text()
 		} catch (error) {
 			console.error('Template load error', error)
@@ -153,7 +156,7 @@ const useEditorPanel = () => {
 
 			template = template
 				.replace('VIEWER_URL', `${HOSTING_URL}/viewer/viewer.js`)
-				.replace('VIEWER_CSS_URL', `${HOSTING_URL}/viewer/viewer.css`)
+				// .replace('VIEWER_CSS_URL', `${HOSTING_URL}/viewer/viewer.css`)
 				.replace('TREE_DATA_PLACEHOLDER', JSON.stringify(data))
 			return template
 		} catch (error) {

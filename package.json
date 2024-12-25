@@ -5,7 +5,8 @@
 	"scripts": {
 		"dev": "next dev",
 		"build": "next build && npm run build:viewer",
-		"build:viewer": "tsc -p public/viewer/tsconfig.viewer.json",
+		"build:viewer": "tsc -p public/viewer/tsconfig.viewer.json && npm run copy:viewer",
+		"copy:viewer": "mkdir -p out/viewer && cp public/viewer/dist/viewer.js out/viewer/ && cp public/viewer/template.html out/viewer/",
 		"start": "next start",
 		"export": "next export",
 		"lint": "next lint",

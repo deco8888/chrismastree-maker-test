@@ -10,10 +10,10 @@
 		"forceConsistentCasingInFileNames": true, // import時にファイルパスの文字列で大文字小文字を区別するかどうかを指定
 		"resolveJsonModule": true,
 		"isolatedModules": true, // コンパイル対象のファイル間の関係性を一切無視して、全てのファイルを単一のモジュールとしてコンパイルする
-		"outDir": "./dist",
+		"outDir": "../../out/viewer",
 		"noEmit": false, // JSファイルの出力を許可
 		"allowJs": true // JSファイルのインポートを許可
 	},
-	"include": ["*.ts"],
+	"include": ["./**/*.ts"],
 	"exclude": ["node_modules"]
 }
